@@ -7,6 +7,12 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
+const DotEnv = require('dotenv')
+const Webpack = require('Webpack')
+// get out env variables
+const envparsers = require('./envparser')
+const envparser = require('./envparser')
+
 module.exports = function (/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
