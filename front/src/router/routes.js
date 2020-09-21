@@ -1,11 +1,36 @@
 
 const routes = [
   {
+    name: 'index',
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/Index.vue') }
-    ]
+    props: {
+      view: 'gastos'
+    }
+  },
+  {
+    name: 'tipos-gastos',
+    path: '/tiposgastos',
+    component: () => import('layouts/MainLayout.vue'),
+    props: {
+      view: 'tipos-gastos'
+    }
+  },
+  {
+    name: 'gastos',
+    path: '/gastos',
+    component: () => import('layouts/MainLayout.vue'),
+    props: {
+      view: 'gastos'
+    }
+  },
+  {
+    name: 'analisis',
+    path: '/analisis',
+    component: () => import('layouts/MainLayout.vue'),
+    props: {
+      view: 'analisis'
+    }
   },
 
   // Always leave this as last one,

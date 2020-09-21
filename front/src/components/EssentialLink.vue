@@ -3,7 +3,7 @@
     clickable
     tag="a"
     target="_blank"
-    :href="link"
+    @click="goTo(link)"
   >
     <q-item-section
       v-if="icon"
@@ -22,8 +22,11 @@
 </template>
 
 <script>
+import { functions } from '../functions'
+
 export default {
   name: 'EssentialLink',
+  mixins: [functions],
   props: {
     title: {
       type: String,

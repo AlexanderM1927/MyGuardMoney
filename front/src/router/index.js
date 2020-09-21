@@ -3,7 +3,15 @@ import VueRouter from 'vue-router'
 
 import routes from './routes'
 
-Vue.use(VueRouter)
+import Highcharts from 'highcharts'
+import Treemap from 'highcharts/modules/treemap'
+import Itemseries from 'highcharts/modules/item-series'
+import HighchartsVue from 'highcharts-vue'
+
+Treemap(Highcharts)
+Itemseries(Highcharts)
+
+Vue.use(VueRouter, Highcharts, Treemap, Itemseries, HighchartsVue)
 
 /*
  * If not building with SSR mode, you can
