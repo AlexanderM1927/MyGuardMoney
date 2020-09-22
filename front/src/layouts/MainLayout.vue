@@ -33,6 +33,7 @@
           v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"
+          :view="view"
         />
       </q-list>
     </q-drawer>
@@ -61,7 +62,7 @@ const linksData = [
   {
     title: 'Tipos gastos',
     icon: 'article',
-    link: 'tiposgastos'
+    link: 'tipos-gastos'
   },
   {
     title: 'Analisis',

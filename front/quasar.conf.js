@@ -25,8 +25,8 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-
-      'axios'
+      'axios',
+      'addressbar-color'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -105,7 +105,7 @@ module.exports = function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify', 'Dialog', 'Loading']
+      plugins: ['Notify', 'Dialog', 'Loading', 'AddressbarColor']
     },
 
     // animations: 'all', // --- includes all animations

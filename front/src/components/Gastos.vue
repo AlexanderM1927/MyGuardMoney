@@ -5,7 +5,7 @@
             </div>
             <div class="col-10 container">
               <q-form @submit="save" v-if="options.length > 0">
-                <q-input color="green" v-model="gasto.valor" @keyup="milesInput()" label="Valor">
+                <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput()" label="Valor">
                   <template v-slot:prepend>
                     <q-icon name="attach_money" />
                   </template>
@@ -15,7 +15,7 @@
                     <q-icon name="description" />
                   </template>
                 </q-input><br>
-                <q-select v-model="gasto.tipo" :options="options" label="Tipo" required :rules="[val => !!val || 'Tienes que llenar este campo']">
+                <q-select v-model="gasto.tipo" :options="options" label="Tipo" required>
                   <template v-slot:prepend>
                     <q-icon name="account_balance" />
                   </template>
@@ -39,6 +39,9 @@
                 </q-input><br>
                 <q-btn label="Agregar" type="submit" class="full-width" color="positive"></q-btn>
               </q-form>
+              <div v-else>
+                Para comenzar, debes ingresar un tipo de gasto.
+              </div>
               <br>
               <q-separator />
               <br>
@@ -59,6 +62,9 @@
                     </q-td>
                     <q-td key="valor" :props="props">
                       {{ miles(props.row.valor) }}
+                    </q-td>
+                    <q-td key="fecha" :props="props">
+                      {{ props.row.fecha }}
                     </q-td>
                     <q-td key="ops" :props="props">
                       <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row.id)"> <q-icon size="md" name="delete"/>
@@ -90,6 +96,7 @@ export default {
         { name: 'tipo', align: 'center', label: 'Tipo', field: 'tipo', sortable: true },
         { name: 'nombre', align: 'center', label: 'Nombre', field: 'nombre', sortable: true },
         { name: 'valor', align: 'center', label: 'Valor', field: 'valor', sortable: true },
+        { name: 'fecha', align: 'center', label: 'Fecha', field: 'fecha', sortable: true },
         { name: 'ops', align: 'center', label: 'Opciones', field: 'ops', sortable: true }
       ]
     }

@@ -4,6 +4,7 @@
     tag="a"
     target="_blank"
     @click="goTo(link)"
+    :class="`${view === link ? 'marked' : ''}`"
   >
     <q-item-section
       v-if="icon"
@@ -46,7 +47,18 @@ export default {
     icon: {
       type: String,
       default: ''
+    },
+
+    view: {
+      type: String,
+      default: ''
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.marked {
+  background: white;
+  color: black;
+}
+</style>

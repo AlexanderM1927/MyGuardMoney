@@ -121,7 +121,7 @@ export default {
       const dias = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       for (let i = 0; i < this.dataGastosMes.length; i++) {
         const fecha = new Date(this.dataGastosMes[i].fecha)
-        const dia = fecha.getDate()
+        const dia = fecha.getUTCDate() - 1
         if (dias[dia] === 0) {
           dias[dia] = parseInt(this.dataGastosMes[i].valor)
         } else {
@@ -134,7 +134,7 @@ export default {
       const fecha = new Date()
       const res = []
       for (let i = 0; i < this.dataGastos.length; i++) {
-        if (new Date(this.dataGastos[i].fecha).getMonth === fecha.getMonth) res.push(this.dataGastos[i])
+        if (new Date(this.dataGastos[i].fecha).getUTCMonth() === fecha.getUTCMonth()) res.push(this.dataGastos[i])
       }
       return res
     }

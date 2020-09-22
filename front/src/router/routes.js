@@ -10,7 +10,7 @@ const routes = [
   },
   {
     name: 'tipos-gastos',
-    path: '/tiposgastos',
+    path: '/tipos-gastos',
     component: () => import('layouts/MainLayout.vue'),
     props: {
       view: 'tipos-gastos'
