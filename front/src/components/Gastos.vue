@@ -20,11 +20,11 @@
                     <q-icon name="account_balance" />
                   </template>
                 </q-select><br>
-                <q-input color="green" label="Fecha y hora" required :rules="[val => !!val || 'Tienes que llenar este campo']" v-model="gasto.fecha">
+                <q-input color="green" label="Fecha y hora" required :rules="[val => !!val || 'Tienes que llenar este campo']" v-model="fecha">
                   <template v-slot:prepend>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-date v-model="gasto.fecha" mask="YYYY-MM-DD HH:mm" />
+                          <q-date v-model="fecha" mask="YYYY-MM-DD HH:mm" />
                         </q-popup-proxy>
                       </q-icon>
                     </template>
@@ -32,7 +32,7 @@
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-time v-model="gasto.fecha" mask="YYYY-MM-DD HH:mm" format24h />
+                          <q-time v-model="fecha" mask="YYYY-MM-DD HH:mm" format24h />
                         </q-popup-proxy>
                       </q-icon>
                   </template>
@@ -98,13 +98,13 @@ export default {
         { name: 'valor', align: 'center', label: 'Valor', field: 'valor', sortable: true },
         { name: 'fecha', align: 'center', label: 'Fecha', field: 'fecha', sortable: true },
         { name: 'ops', align: 'center', label: 'Opciones', field: 'ops', sortable: true }
-      ]
+      ],
+      fecha: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm:ss')
     }
   },
   created () {
     this.getData()
     this.getTypes()
-    this.gasto.fecha = date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm:ss')
   },
   methods: {
     async getTypes () {
@@ -121,6 +121,7 @@ export default {
         this.gasto.id = Date.now()
         this.gasto.valor = this.gasto.valor.replace(/\./g, '')
         this.gasto.tipo = await this.getDataCollectionByNombre('tipos', this.gasto.tipo)
+        this.gasto.fecha = this.fecha
         this.addToCollection('gastos', this.gasto)
         this.data.push(this.gasto)
         this.gasto = {}
