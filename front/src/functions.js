@@ -59,8 +59,9 @@ export const functions = {
     },
     isNumber (n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) },
     miles (input) {
-      if (input !== undefined) {
-        var num = input.replace(/\./g, '')
+      if (input && input !== undefined) {
+        if (typeof input === 'number') input = input.toString()
+        let num = input.replace(/\./g, '')
         if (!this.isNumber(input)) {
           num = ''
         } else {

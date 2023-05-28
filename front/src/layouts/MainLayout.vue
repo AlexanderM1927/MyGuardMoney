@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="bg-green" elevated>
+    <q-header class="bg-primary" elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -21,13 +21,14 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      content-class="bg-green text-white"
+      content-class="bg-primary text-white"
     >
       <q-list>
         <q-item-label
           header
-          class="text-white"
+          class="text-white text-center text-h6"
         >
+          Menu
         </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
@@ -42,6 +43,7 @@
       <gastos v-if="view === 'gastos'"></gastos>
       <tipos-gastos v-if="view === 'tipos-gastos'"></tipos-gastos>
       <analisis v-if="view === 'analisis'"></analisis>
+      <ingresos v-if="view === 'ingresos'"></ingresos>
     </q-page-container>
   </q-layout>
 </template>
@@ -51,6 +53,7 @@ import EssentialLink from 'components/EssentialLink.vue'
 import Gastos from 'components/Gastos.vue'
 import TiposGastos from 'components/TiposGastos.vue'
 import Analisis from 'components/Analisis.vue'
+import Ingresos from 'components/Ingresos.vue'
 import { functions } from '../functions'
 
 const linksData = [
@@ -65,6 +68,11 @@ const linksData = [
     link: 'tipos-gastos'
   },
   {
+    title: 'Ingresos',
+    icon: 'account_balance',
+    link: 'ingresos'
+  },
+  {
     title: 'Analisis',
     icon: 'analytics',
     link: 'analisis'
@@ -73,7 +81,7 @@ const linksData = [
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink, Gastos, TiposGastos, Analisis },
+  components: { EssentialLink, Gastos, TiposGastos, Analisis, Ingresos },
   mixins: [functions],
   data () {
     return {

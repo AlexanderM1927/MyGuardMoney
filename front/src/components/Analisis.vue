@@ -4,8 +4,48 @@
             <div class="col-1">
             </div>
             <div class="col-10 container">
-                <highcharts :options="chartOptions1"></highcharts>
-                <highcharts :options="chartOptions2"></highcharts>
+              <q-select v-model="monthSelected" @input="init()" :options="options" label="Mes" required>
+                  <template v-slot:prepend>
+                    <q-icon name="event" />
+                  </template>
+                </q-select><br>
+              <highcharts :options="chartOptions1"></highcharts>
+              <highcharts :options="chartOptions2"></highcharts>
+              <br>
+              <q-table
+                  :dense="$q.screen.lt.md"
+                  class="table"
+                  :data="dataCompativeTable"
+                  :columns="columnsComparativeTable"
+                  row-key="name"
+                  :rows-per-page-options="[0]"
+              >
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="detail" :props="props">
+                      {{ props.row.detail }}
+                    </q-td>
+                    <q-td key="incoming" :props="props">
+                      {{ miles(props.row.incoming) }}
+                    </q-td>
+                    <q-td key="outcoming" :props="props">
+                      {{ miles(props.row.outcoming) }}
+                    </q-td>
+                  </q-tr>
+                </template>
+                <template v-slot:bottom-row>
+                  <q-tr>
+                    <q-td key="detail" class="text-center">
+                      <b>Total</b>
+                    </q-td>
+                    <q-td key="incoming">
+                    </q-td>
+                    <q-td key="outcoming" class="text-center">
+                      {{ miles(totalComparativeTable) }}
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
             </div>
             <div class="col-1"></div>
         </div>
@@ -24,6 +64,31 @@ export default {
   },
   data () {
     return {
+      dataTiposPorMes: [],
+      totalComparativeTable: 0,
+      columnsComparativeTable: [
+        { name: 'detail', align: 'center', label: 'Nombre', field: 'detail', sortable: true },
+        { name: 'incoming', align: 'center', label: 'Debitos', field: 'incoming', sortable: true },
+        { name: 'outcoming', align: 'center', label: 'Creditos', field: 'outcoming', sortable: true }
+      ],
+      dataCompativeTable: [],
+      monthSelected: {
+        value: 0, label: 'Enero'
+      },
+      options: [
+        { value: 0, label: 'Enero' },
+        { value: 1, label: 'Febrero' },
+        { value: 2, label: 'Marzo' },
+        { value: 3, label: 'Abril' },
+        { value: 4, label: 'Mayo' },
+        { value: 5, label: 'Junio' },
+        { value: 6, label: 'Julio' },
+        { value: 7, label: 'Agosto' },
+        { value: 8, label: 'Septiembre' },
+        { value: 9, label: 'Octubre' },
+        { value: 10, label: 'Noviembre' },
+        { value: 11, label: 'Diciembre' }
+      ],
       dataTipos: [],
       dataGastos: [],
       chartOptions1: {
@@ -34,6 +99,9 @@ export default {
           text: 'Gastos este mes'
         },
         xAxis: {
+          title: {
+            text: 'Dias'
+          },
           categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
         },
         yAxis: {
@@ -79,13 +147,26 @@ export default {
         }]
       },
       chartOptions2: {
+        chart: {
+          type: 'pie'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '{point.name}: {point.percentage:.1f}%'
+            },
+            showInLegend: true
+          }
+        },
         colorAxis: {
           minColor: '#F2f2f2',
           maxColor: '#E9BC36'
         },
         series: [{
-          type: 'treemap',
-          layoutAlgorithm: 'squarified',
+          colorByPoint: true,
           data: [{ name: '', value: '1', color: '#E9BC36' }]
         }],
         title: {
@@ -95,48 +176,98 @@ export default {
     }
   },
   async mounted () {
-    await this.getData()
-    this.organiceByType()
-    this.organiceByMonth()
+    const fechaActual = new Date()
+    const mesActual = fechaActual.getUTCMonth()
+    const filter = this.options.find(obj => obj.value === mesActual)
+    this.monthSelected = filter
+    await this.init()
   },
   methods: {
+    async init () {
+      await this.getData()
+      this.organiceByType()
+      this.organiceByMonth()
+      this.fillTable()
+    },
+    fillTable () {
+      this.dataCompativeTable = []
+      this.totalComparativeTable = 0
+      const ingresosMesActual = this.valuesMonthSelected.incoming
+      const gastosPorTipoMesActual = this.dataTiposPorMes
+      for (let i = 0; i < ingresosMesActual.length; i++) {
+        this.dataCompativeTable.push(
+          {
+            detail: ingresosMesActual[i].nombre,
+            incoming: ingresosMesActual[i].valor,
+            outcoming: 0
+          }
+        )
+        this.totalComparativeTable = parseInt(this.totalComparativeTable) + parseInt(ingresosMesActual[i].valor)
+      }
+      for (let i = 0; i < gastosPorTipoMesActual.length; i++) {
+        this.dataCompativeTable.push(
+          {
+            detail: gastosPorTipoMesActual[i].nombre,
+            outcoming: gastosPorTipoMesActual[i].valor,
+            incoming: 0
+          }
+        )
+        this.totalComparativeTable = parseInt(this.totalComparativeTable) - parseInt(gastosPorTipoMesActual[i].valor)
+      }
+    },
     async getData () {
       this.dataTipos = await this.getDataCollection('tipos', 'id', 'desc')
       this.dataGastos = await this.getDataCollection('gastos', 'id', 'desc')
-      this.dataGastosMes = this.justThisMonth(this.dataGastos)
+      this.dataIngresos = await this.getDataCollection('ingresos', 'id', 'desc')
+      this.valuesMonthSelected = this.selectMonth()
     },
     organiceByType () {
       this.chartOptions2.series[0].data = []
       for (let i = 0; i < this.dataTipos.length; i++) {
-        this.dataTipos[i].valor = 0
-        for (let j = 0; j < this.dataGastosMes.length; j++) {
-          if (this.dataTipos[i].id === this.dataGastosMes[j].tipo.id) {
-            this.dataTipos[i].valor += parseInt(this.dataGastosMes[j].valor)
+        this.dataTiposPorMes[i] = {
+          id: this.dataTipos[i].id,
+          valor: 0,
+          nombre: this.dataTipos[i].nombre,
+          color: this.dataTipos[i].color
+        }
+        for (let j = 0; j < this.valuesMonthSelected.outcoming.length; j++) {
+          if (this.dataTiposPorMes[i].id === this.valuesMonthSelected.outcoming[j].tipo.id) {
+            this.dataTiposPorMes[i].valor += parseInt(this.valuesMonthSelected.outcoming[j].valor)
           }
         }
-        this.chartOptions2.series[0].data.push({ name: this.dataTipos[i].nombre, value: this.dataTipos[i].valor, color: this.dataTipos[i].color })
+        this.chartOptions2.series[0].data.push({ name: this.dataTiposPorMes[i].nombre, y: this.dataTiposPorMes[i].valor, color: this.dataTiposPorMes[i].color })
       }
     },
     organiceByMonth () {
       const dias = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      for (let i = 0; i < this.dataGastosMes.length; i++) {
-        const fecha = new Date(this.dataGastosMes[i].fecha)
+      for (let i = 0; i < this.valuesMonthSelected.outcoming.length; i++) {
+        const fecha = new Date(this.valuesMonthSelected.outcoming[i].fecha)
         const dia = fecha.getUTCDate() - 1
         if (dias[dia] === 0) {
-          dias[dia] = parseInt(this.dataGastosMes[i].valor)
+          dias[dia] = parseInt(this.valuesMonthSelected.outcoming[i].valor)
         } else {
-          dias[dia] += parseInt(this.dataGastosMes[i].valor)
+          dias[dia] += parseInt(this.valuesMonthSelected.outcoming[i].valor)
         }
       }
       this.chartOptions1.series[0].data = dias
     },
-    justThisMonth (array) {
-      const fecha = new Date()
-      const res = []
+    selectMonth () {
+      const resGastos = []
+      const resIngresos = []
       for (let i = 0; i < this.dataGastos.length; i++) {
-        if (new Date(this.dataGastos[i].fecha).getUTCMonth() === fecha.getUTCMonth()) res.push(this.dataGastos[i])
+        if (new Date(this.dataGastos[i].fecha).getUTCMonth() === this.monthSelected.value) {
+          resGastos.push(this.dataGastos[i])
+        }
       }
-      return res
+      for (let i = 0; i < this.dataIngresos.length; i++) {
+        if (new Date(this.dataIngresos[i].fecha).getUTCMonth() === this.monthSelected.value) {
+          resIngresos.push(this.dataIngresos[i])
+        }
+      }
+      return {
+        incoming: resIngresos,
+        outcoming: resGastos
+      }
     }
   }
 }

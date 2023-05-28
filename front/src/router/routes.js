@@ -32,6 +32,14 @@ const routes = [
       view: 'analisis'
     }
   },
+  {
+    name: 'ingresos',
+    path: '/ingresos',
+    component: () => import('layouts/MainLayout.vue'),
+    props: {
+      view: 'ingresos'
+    }
+  },
 
   // Always leave this as last one,
   // but you can also remove it
