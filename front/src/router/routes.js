@@ -4,40 +4,66 @@ const routes = [
     name: 'index',
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'index', path: '', component: () => import('pages/Expenses.vue') }
+    ],
     props: {
-      view: 'gastos'
+      view: 'expenses'
     }
   },
   {
-    name: 'tipos-gastos',
-    path: '/tipos-gastos',
+    name: 'expenses-types',
+    path: '/expenses-types',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Tipos de gastos', path: '', component: () => import('pages/Types.vue') }
+    ],
     props: {
-      view: 'tipos-gastos'
+      view: 'expenses-types'
     }
   },
   {
-    name: 'gastos',
-    path: '/gastos',
+    name: 'expenses',
+    path: '/expenses',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Gastos', path: '', component: () => import('pages/Expenses.vue') }
+    ],
     props: {
-      view: 'gastos'
+      view: 'expenses'
     }
   },
   {
-    name: 'analisis',
-    path: '/analisis',
+    name: 'analysis',
+    path: '/analysis',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Analisis', path: '', component: () => import('pages/Analysis.vue') }
+    ],
     props: {
-      view: 'analisis'
+      view: 'analysis'
     }
   },
   {
-    name: 'ingresos',
-    path: '/ingresos',
+    name: 'incomings',
+    path: '/incomings',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Ingresos', path: '', component: () => import('pages/Incomings.vue') }
+    ],
     props: {
-      view: 'ingresos'
+      view: 'incomings'
+    }
+  },
+  {
+    name: 'settings',
+    path: '/settings',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Ingresos', path: '', component: () => import('pages/Settings.vue') }
+    ],
+    props: {
+      view: 'settings'
     }
   },
 

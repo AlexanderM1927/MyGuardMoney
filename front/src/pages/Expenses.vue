@@ -1,4 +1,5 @@
 <template>
+  <q-page>
     <div class="q-pa-md">
         <div class="row">
             <div class="col-1">
@@ -41,6 +42,10 @@
               </q-form>
               <div v-else>
                 Para comenzar, debes ingresar un tipo de gasto.
+                <q-btn label="Ir a crear tipo de gasto" @click="goTo('expenses-types')" class="full-width" color="primary"></q-btn>
+                <br>
+                <br>
+                <b>Nota:</b> Los gastos van vinculados a un tipo de gasto, de esta forma podrás organizar diferentes gasto de una misma clase, es decir, si el tipo de gasto es comida, podrás adjuntar varios gastos de la misma causa.
               </div>
               <br>
               <q-separator />
@@ -78,6 +83,7 @@
             <div class="col-1"></div>
         </div>
     </div>
+  </q-page>
 </template>
 
 <script>
@@ -85,7 +91,7 @@ import { functions } from '../functions.js'
 import { date } from 'quasar'
 
 export default {
-  name: 'gastos',
+  name: 'expenses',
   mixins: [functions],
   data () {
     return {
@@ -110,7 +116,12 @@ export default {
     async getTypes () {
       const tipos = await this.getDataCollection('tipos')
       for (let i = 0; i < tipos.length; i++) {
-        this.options.push(tipos[i].nombre)
+        this.options.push(
+          {
+            label: tipos[i].nombre,
+            value: tipos[i].id
+          }
+        )
       }
     },
     async getData () {
@@ -120,12 +131,13 @@ export default {
       if (this.gasto.valor !== '') {
         this.gasto.id = Date.now()
         this.gasto.valor = this.gasto.valor.replace(/\./g, '')
-        this.gasto.tipo = await this.getDataCollectionByNombre('tipos', this.gasto.tipo)
+        this.gasto.tipo = await this.getDataCollectionById('tipos', this.gasto.tipo.value)
         this.gasto.fecha = this.fecha
         this.addToCollection('gastos', this.gasto)
         this.data.push(this.gasto)
         this.gasto = {}
         this.gasto.fecha = date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm:ss')
+        this.alert('positive', 'Gasto agregado')
       }
     },
     async del (id) {

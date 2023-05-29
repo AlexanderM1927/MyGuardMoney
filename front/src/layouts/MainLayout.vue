@@ -26,9 +26,9 @@
       <q-list>
         <q-item-label
           header
-          class="text-white text-center text-h6"
         >
-          Menu
+          <div class="text-white text-center text-h6">MyGuardMoney</div>
+          <div class="text-white text-center text-subtitle2">Manejar tus gastos nunca había sido tan sencillo</div>
         </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
@@ -40,48 +40,46 @@
     </q-drawer>
 
     <q-page-container>
-      <gastos v-if="view === 'gastos'"></gastos>
-      <tipos-gastos v-if="view === 'tipos-gastos'"></tipos-gastos>
-      <analisis v-if="view === 'analisis'"></analisis>
-      <ingresos v-if="view === 'ingresos'"></ingresos>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
-import Gastos from 'components/Gastos.vue'
-import TiposGastos from 'components/TiposGastos.vue'
-import Analisis from 'components/Analisis.vue'
-import Ingresos from 'components/Ingresos.vue'
 import { functions } from '../functions'
 
 const linksData = [
   {
     title: 'Gastos',
     icon: 'attach_money',
-    link: 'gastos'
+    link: 'expenses'
   },
   {
     title: 'Tipos gastos',
     icon: 'article',
-    link: 'tipos-gastos'
+    link: 'expenses-types'
   },
   {
     title: 'Ingresos',
     icon: 'account_balance',
-    link: 'ingresos'
+    link: 'incomings'
   },
   {
     title: 'Analisis',
     icon: 'analytics',
-    link: 'analisis'
+    link: 'analysis'
+  },
+  {
+    title: 'Configuracion',
+    icon: 'settings',
+    link: 'settings'
   }
 ]
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink, Gastos, TiposGastos, Analisis, Ingresos },
+  components: { EssentialLink },
   mixins: [functions],
   data () {
     return {

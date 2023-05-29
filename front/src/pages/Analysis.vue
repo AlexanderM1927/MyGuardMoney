@@ -1,4 +1,5 @@
 <template>
+  <q-page>
     <div class="q-pa-md">
         <div class="row">
             <div class="col-1">
@@ -12,6 +13,7 @@
               <highcharts :options="chartOptions1"></highcharts>
               <highcharts :options="chartOptions2"></highcharts>
               <br>
+              <h6 class="text-h6 text-center">Tabla comparativa Ingresos - Gastos</h6>
               <q-table
                   :dense="$q.screen.lt.md"
                   class="table"
@@ -50,6 +52,7 @@
             <div class="col-1"></div>
         </div>
     </div>
+  </q-page>
 </template>
 
 <script>
@@ -57,7 +60,7 @@ import { functions } from '../functions.js'
 import { Chart } from 'highcharts-vue'
 
 export default {
-  name: 'gastos',
+  name: 'analysis',
   mixins: [functions],
   components: {
     highcharts: Chart

@@ -1,4 +1,5 @@
 <template>
+  <q-page>
     <div class="q-pa-md">
         <div class="row">
             <div class="col-1">
@@ -39,7 +40,7 @@
                         {{ props.row.nombre }}
                       </q-td>
                       <q-td key="ops" :props="props">
-                        <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row.id)"> <q-icon size="md" name="delete"/>
+                        <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row)"> <q-icon size="md" name="delete"/>
                           <q-tooltip :delay="1000" :offset="[0, 10]">eliminar</q-tooltip>
                         </a>
                       </q-td>
@@ -50,13 +51,14 @@
             <div class="col-1"></div>
         </div>
     </div>
+  </q-page>
 </template>
 
 <script>
 import { functions } from '../functions.js'
 
 export default {
-  name: 'gastos',
+  name: 'expenses-types',
   mixins: [functions],
   data () {
     return {
@@ -78,6 +80,7 @@ export default {
         this.addToCollection('tipos', this.type)
         this.data.push(this.type)
         this.type = {}
+        this.alert('positive', 'Tipo agregado')
       } else {
         this.alert('negative', 'El nombre es obligatorio')
       }
@@ -85,10 +88,21 @@ export default {
     async getData () {
       this.data = await this.getDataCollection('tipos', 'id', 'desc')
     },
-    async del (id) {
-      const index = this.data.findIndex(data => data.id === id)
-      this.data.splice(index, 1)
-      await this.deleteDataCollection('tipos', id)
+    async del (tipo) {
+      const gastos = await this.getDataCollection('gastos', 'id', 'desc')
+      const gastosWhereTipo = gastos.filter(gasto => gasto.tipo.id === tipo.id)
+      if (gastosWhereTipo.length > 0) {
+        const confirmationDelete = confirm('Este tipo de gasto tiene asociado gastos, si lo eliminas, la gráfica relacionada con los tipos de gastos puede que se dañe el mes que se generen')
+        if (confirmationDelete) {
+          const index = this.data.findIndex(data => data.id === tipo.id)
+          this.data.splice(index, 1)
+          await this.deleteDataCollection('tipos', tipo.id)
+        }
+      } else {
+        const index = this.data.findIndex(data => data.id === tipo.id)
+        this.data.splice(index, 1)
+        await this.deleteDataCollection('tipos', tipo.id)
+      }
     }
   }
 }

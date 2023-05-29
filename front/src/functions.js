@@ -23,25 +23,25 @@ export const functions = {
     async getDataCollection (collection, by = '', order = '') {
       let answer = []
       if (by === '' && order === '') {
-        await this.db.collection(collection).get().then(users => {
-          answer = users
+        await this.db.collection(collection).get().then(data => {
+          answer = data
         })
       } else {
-        await this.db.collection(collection).orderBy(by, order).get().then(users => {
-          answer = users
+        await this.db.collection(collection).orderBy(by, order).get().then(data => {
+          answer = data
         })
       }
       return answer
     },
-    async getDataCollectionByNombre (collection, value, by = '', order = '') {
+    async getDataCollectionById (collection, value, by = '', order = '') {
       let answer = []
       if (by === '' && order === '') {
-        await this.db.collection(collection).doc({ nombre: value }).get().then(users => {
-          answer = users
+        await this.db.collection(collection).doc({ id: value }).get().then(data => {
+          answer = data
         })
       } else {
-        await this.db.collection(collection).doc({ nombre: value }).orderBy(by, order).get().then(users => {
-          answer = users
+        await this.db.collection(collection).doc({ id: value }).orderBy(by, order).get().then(data => {
+          answer = data
         })
       }
       return answer
@@ -56,6 +56,9 @@ export const functions = {
         .catch(error => {
           console.log(error)
         })
+    },
+    async deleteDatabase () {
+      this.db.delete()
     },
     isNumber (n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) },
     miles (input) {
