@@ -5,49 +5,51 @@
             <div class="col-1">
             </div>
             <div class="col-10 container">
-              <q-select v-model="monthSelected" @input="init()" :options="options" label="Mes" required>
-                  <template v-slot:prepend>
-                    <q-icon name="event" />
-                  </template>
-                </q-select><br>
-              <highcharts :options="chartOptions1"></highcharts>
-              <highcharts :options="chartOptions2"></highcharts>
-              <br>
-              <h6 class="text-h6 text-center">Tabla comparativa Ingresos - Gastos</h6>
-              <q-table
-                  :dense="$q.screen.lt.md"
-                  class="table"
-                  :data="dataCompativeTable"
-                  :columns="columnsComparativeTable"
-                  row-key="name"
-                  :rows-per-page-options="[0]"
-              >
-                <template v-slot:body="props">
-                  <q-tr :props="props">
-                    <q-td key="detail" :props="props">
-                      {{ props.row.detail }}
-                    </q-td>
-                    <q-td key="incoming" :props="props">
-                      {{ miles(props.row.incoming) }}
-                    </q-td>
-                    <q-td key="outcoming" :props="props">
-                      {{ miles(props.row.outcoming) }}
-                    </q-td>
-                  </q-tr>
-                </template>
-                <template v-slot:bottom-row>
-                  <q-tr>
-                    <q-td key="detail" class="text-center">
-                      <b>Total</b>
-                    </q-td>
-                    <q-td key="incoming">
-                    </q-td>
-                    <q-td key="outcoming" class="text-center">
-                      {{ miles(totalComparativeTable) }}
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
+              <div v-if="valuesMonthSelected">
+                  <q-select v-model="monthSelected" @input="init()" :options="options" label="Mes" required>
+                    <template v-slot:prepend>
+                      <q-icon name="event" />
+                    </template>
+                  </q-select><br>
+                  <highcharts :options="chartOptions1"></highcharts>
+                  <highcharts :options="chartOptions2"></highcharts>
+                  <br>
+                  <h6 class="text-h6 text-center">Tabla comparativa Ingresos - Gastos</h6>
+                  <q-table
+                      :dense="$q.screen.lt.md"
+                      class="table"
+                      :data="dataCompativeTable"
+                      :columns="columnsComparativeTable"
+                      row-key="name"
+                      :rows-per-page-options="[0]"
+                  >
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td key="detail" :props="props">
+                          {{ props.row.detail }}
+                        </q-td>
+                        <q-td key="incoming" :props="props">
+                          {{ miles(props.row.incoming) }}
+                        </q-td>
+                        <q-td key="outcoming" :props="props">
+                          {{ miles(props.row.outcoming) }}
+                        </q-td>
+                      </q-tr>
+                    </template>
+                    <template v-slot:bottom-row>
+                      <q-tr>
+                        <q-td key="detail" class="text-center">
+                          <b>Total</b>
+                        </q-td>
+                        <q-td key="incoming">
+                        </q-td>
+                        <q-td key="outcoming" class="text-center">
+                          {{ miles(totalComparativeTable) }}
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+              </div>
             </div>
             <div class="col-1"></div>
         </div>
@@ -67,6 +69,7 @@ export default {
   },
   data () {
     return {
+      valuesMonthSelected: null,
       dataTiposPorMes: [],
       totalComparativeTable: 0,
       columnsComparativeTable: [

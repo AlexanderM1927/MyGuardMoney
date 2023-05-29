@@ -40,7 +40,7 @@ export default {
   methods: {
     updateApp () {
       caches.keys().then((keyList) => Promise.all(keyList.map((key) => caches.delete(key))))
-      this.alert('positive', 'La app acaba de ser actualizada')
+      location.reload()
     },
     async deleteData () {
       await this.deleteDatabase()
