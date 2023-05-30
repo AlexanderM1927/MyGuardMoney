@@ -28,8 +28,6 @@
                       <q-tr :props="props">
                         <q-td key="detail" :props="props">
                           {{ props.row.detail.name }}
-                          <div v-show="props.row.outcoming" :class="`table-detail-container detail-${props.row.key}`"></div>
-                          <br v-show="props.row.outcoming">
                           <a
                             v-show="props.row.outcoming"
                             :class="`show-btn show-more-btn show-more-btn-key-${props.row.key}`"
@@ -44,6 +42,7 @@
                           >
                             <q-icon name="visibility_off" />Ocultar
                           </a>
+                          <div v-show="props.row.outcoming" :class="`table-detail-container detail-${props.row.key}`"></div>
                         </q-td>
                         <q-td key="incoming" :props="props">
                           {{ miles(props.row.incoming) }}
@@ -212,7 +211,7 @@ export default {
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
-              format: '{point.name}: {point.percentage:.1f}%'
+              format: '{point.percentage:.1f}%<br>{point.name}'
             },
             showInLegend: true
           }
@@ -355,15 +354,17 @@ export default {
       buttonShowMore.style.display = 'none'
       buttonShowLess.style.display = 'block'
       const table = document.createElement('table')
-      table.style.marginLeft = 'auto'
-      table.style.marginRight = 'auto'
+      table.style.width = '100%'
+      table.style.textAlign = 'left'
       row.detail.gastos.forEach(gasto => {
         const tr = document.createElement('tr')
         const tdNombre = document.createElement('td')
         const tdValor = document.createElement('td')
-        tdNombre.innerText = gasto.nombre
+        tdNombre.innerText = gasto.nombre.substring(0, 10)
         tdValor.innerText = this.miles(gasto.valor)
         tr.style.height = 'auto'
+        tdNombre.style.height = 'auto'
+        tdValor.style.height = 'auto'
         tr.appendChild(tdNombre)
         tr.appendChild(tdValor)
         table.appendChild(tr)
