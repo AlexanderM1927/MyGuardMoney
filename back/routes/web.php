@@ -12,7 +12,13 @@
 */
 
 // Reminders
-$router->get('/reminders', ['as' => 'reminder.index', 'uses' => 'ReminderController@indexReminder']);
+$router->get('/reminders/{token}', ['as' => 'reminder.index', 'uses' => 'ReminderController@indexReminder']);
 $router->post('/reminders', ['as' => 'reminder.store', 'uses' => 'ReminderController@storeReminder']);
 $router->put('/reminders', ['as' => 'reminder.update', 'uses' => 'ReminderController@updateReminder']);
 $router->delete('/reminders', ['as' => 'reminder.delete', 'uses' => 'ReminderController@deleteReminder']);
+$router->get('/reminders-run', ['as' => 'reminder.run', 'uses' => 'ReminderController@runReminders']);
+
+// Emails
+$router->get('/emails/{token}', ['as' => 'reminder.index', 'uses' => 'EmailController@checkIfEmailIsVerfied']);
+$router->post('/emails', ['as' => 'reminder.store', 'uses' => 'EmailController@storeEmail']);
+$router->get('/emails/{token}', ['as' => 'reminder.update', 'uses' => 'EmailController@verifyEmail']);

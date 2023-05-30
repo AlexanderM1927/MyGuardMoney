@@ -4,8 +4,8 @@ export default {
   store (params) {
     return Api().post('reminders', params)
   },
-  get () {
-    return Api().get('reminders')
+  index (token) {
+    return Api().get('reminders/' + token)
   },
   update (params) {
     return Api().put('reminders/' + params.id, params)

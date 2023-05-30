@@ -4,15 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Reminder extends Model
+class Email extends Model
 {
-    protected $table = 'reminders';
+    protected $table = 'emails';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'detail', 'hour', 'frequency', 'day', 'email_id', 'last_executed'
+        'email', 'token', 'is_verified'
     ];
 }

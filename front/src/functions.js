@@ -124,6 +124,12 @@ export const functions = {
     },
     disableLoading () {
       this.$q.loading.hide()
+    },
+    generateRand () {
+      return Math.random().toString(36).substr(2) // remove `0.`
+    },
+    generateToken () {
+      return this.generateRand() + this.generateRand() // to make it longer
     }
   }
 }
