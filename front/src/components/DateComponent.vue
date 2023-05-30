@@ -1,17 +1,17 @@
 <template>
-  <q-input v-model="fecha" @keyup.enter="enterEventEmit()" color="green" label="Fecha y hora" required :rules="[val => !!val || 'Tienes que llenar este campo']" @input="handleInput">
-    <template v-slot:prepend>
+  <q-input v-model="fecha" @keyup.enter="enterEventEmit()" color="green" :label="label" required :rules="[val => !!val || 'Tienes que llenar este campo']" @input="handleInput">
+    <template v-if="!onlyHour" v-slot:prepend>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy transition-show="scale" transition-hide="scale">
-            <q-date v-model="fecha"  @input="handleInput" mask="YYYY-MM-DD HH:mm" />
+            <q-date v-model="fecha"  @input="handleInput" :mask="`${onlyDay ? 'DD' : 'YYYY-MM-DD HH:mm'}`" />
           </q-popup-proxy>
         </q-icon>
       </template>
 
-      <template v-slot:append>
+      <template v-if="!onlyDay" v-slot:append>
         <q-icon name="access_time" class="cursor-pointer">
           <q-popup-proxy transition-show="scale" transition-hide="scale">
-            <q-time v-model="fecha"  @input="handleInput" mask="YYYY-MM-DD HH:mm" format24h />
+            <q-time v-model="fecha"  @input="handleInput" mask="HH:mm" format24h />
           </q-popup-proxy>
         </q-icon>
     </template>
@@ -22,7 +22,7 @@
 
 export default {
   name: 'DateComponent',
-  props: ['value', 'enterEventParams'],
+  props: ['value', 'enterEventParams', 'onlyHour', 'onlyDay', 'label'],
   data () {
     return {
       fecha: this.value

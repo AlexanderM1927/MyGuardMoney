@@ -11,6 +11,8 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
+// Reminders
+$router->get('/reminders', ['as' => 'reminder.index', 'uses' => 'ReminderController@indexReminder']);
+$router->post('/reminders', ['as' => 'reminder.store', 'uses' => 'ReminderController@storeReminder']);
+$router->put('/reminders', ['as' => 'reminder.update', 'uses' => 'ReminderController@updateReminder']);
+$router->delete('/reminders', ['as' => 'reminder.delete', 'uses' => 'ReminderController@deleteReminder']);

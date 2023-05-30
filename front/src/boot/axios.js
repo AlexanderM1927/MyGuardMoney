@@ -1,4 +1,8 @@
-import Vue from 'vue'
+// import Vue from 'vue'
 import axios from 'axios'
 
-Vue.prototype.$axios = axios
+export default () => {
+  return axios.create({
+    baseURL: process.env.API_URL
+  })
+}

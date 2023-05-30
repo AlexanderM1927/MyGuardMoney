@@ -19,7 +19,7 @@
                     <q-icon name="account_balance" />
                   </template>
                 </q-select><br>
-                <DateComponent v-model="fecha"></DateComponent><br>
+                <DateComponent label="Fecha y hora" v-model="fecha"></DateComponent><br>
                 <q-btn label="Agregar" type="submit" class="full-width" color="positive"></q-btn>
               </q-form>
               <div v-else>
@@ -64,7 +64,7 @@
                     <q-td key="fecha" :props="props">
                       {{ props.row.fecha }}
                       <q-popup-edit v-model="props.row.fecha" v-slot="scope">
-                        <DateComponent v-model="scope.value" :enterEventParams="{ 'scope': scope, 'row': props.row, field: 'fecha' }" @enterEvent="update"></DateComponent><br>
+                        <DateComponent label="Fecha y hora" v-model="scope.value" :enterEventParams="{ 'scope': scope, 'row': props.row, field: 'fecha' }" @enterEvent="update"></DateComponent><br>
                       </q-popup-edit>
                     </q-td>
                     <q-td key="ops" :props="props">

@@ -56,6 +56,17 @@ const routes = [
     }
   },
   {
+    name: 'reminders',
+    path: '/reminders',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { name: 'Recordatorios', path: '', component: () => import('pages/Reminders.vue') }
+    ],
+    props: {
+      view: 'reminders'
+    }
+  },
+  {
     name: 'settings',
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
