@@ -27,7 +27,23 @@
                     <template v-slot:body="props">
                       <q-tr :props="props">
                         <q-td key="detail" :props="props">
-                          {{ props.row.detail }}
+                          {{ props.row.detail.name }}
+                          <div v-show="props.row.outcoming" :class="`table-detail-container detail-${props.row.key}`"></div>
+                          <br v-show="props.row.outcoming">
+                          <a
+                            v-show="props.row.outcoming"
+                            :class="`show-btn show-more-btn show-more-btn-key-${props.row.key}`"
+                            @click="showMore(props.row)"
+                          >
+                            <q-icon name="visibility" />Detalle
+                          </a>
+                          <a
+                            v-show="props.row.outcoming"
+                            :class="`show-btn show-less-btn show-less-btn-key-${props.row.key}`"
+                            @click="showLess(props.row)"
+                          >
+                            <q-icon name="visibility_off" />Ocultar
+                          </a>
                         </q-td>
                         <q-td key="incoming" :props="props">
                           {{ miles(props.row.incoming) }}
@@ -50,6 +66,7 @@
                       </q-tr>
                     </template>
                   </q-table>
+                  <br>
                   <highcharts :options="chartOptionsIngresosVsGastos"></highcharts>
               </div>
             </div>
@@ -236,7 +253,9 @@ export default {
       for (let i = 0; i < ingresosMesActual.length; i++) {
         this.dataCompativeTable.push(
           {
-            detail: ingresosMesActual[i].nombre,
+            detail: {
+              name: ingresosMesActual[i].nombre
+            },
             incoming: ingresosMesActual[i].valor,
             outcoming: 0
           }
@@ -246,13 +265,22 @@ export default {
       for (let i = 0; i < gastosPorTipoMesActual.length; i++) {
         this.dataCompativeTable.push(
           {
-            detail: gastosPorTipoMesActual[i].nombre,
+            detail: {
+              name: gastosPorTipoMesActual[i].nombre,
+              gastos: gastosPorTipoMesActual[i].gastos
+            },
             outcoming: gastosPorTipoMesActual[i].valor,
             incoming: 0
           }
         )
         this.totalGastosComparative += parseInt(gastosPorTipoMesActual[i].valor)
       }
+      // add key to each row
+      let key = 0
+      this.dataCompativeTable.forEach(row => {
+        key++
+        row.key = key
+      })
       this.totalComparativeTable = parseInt(this.totalIngresosComparative) - parseInt(this.totalGastosComparative)
     },
     async getData () {
@@ -267,12 +295,17 @@ export default {
         this.dataTiposPorMes[i] = {
           id: this.dataTipos[i].id,
           valor: 0,
+          gastos: [],
           nombre: this.dataTipos[i].nombre,
           color: this.dataTipos[i].color
         }
         for (let j = 0; j < this.valuesMonthSelected.outcoming.length; j++) {
           if (this.dataTiposPorMes[i].id === this.valuesMonthSelected.outcoming[j].tipo.id) {
             this.dataTiposPorMes[i].valor += parseInt(this.valuesMonthSelected.outcoming[j].valor)
+            this.dataTiposPorMes[i].gastos.push({
+              nombre: this.valuesMonthSelected.outcoming[j].nombre,
+              valor: this.valuesMonthSelected.outcoming[j].valor
+            })
           }
         }
         this.chartOptionsGastosPorCategoria.series[0].data.push({ name: this.dataTiposPorMes[i].nombre, y: this.dataTiposPorMes[i].valor, color: this.dataTiposPorMes[i].color })
@@ -314,7 +347,56 @@ export default {
         incoming: resIngresos,
         outcoming: resGastos
       }
+    },
+    showMore (row) {
+      const divContainer = document.getElementsByClassName('detail-' + row.key)[0]
+      const buttonShowMore = document.getElementsByClassName('show-more-btn-key-' + row.key)[0]
+      const buttonShowLess = document.getElementsByClassName('show-less-btn-key-' + row.key)[0]
+      buttonShowMore.style.display = 'none'
+      buttonShowLess.style.display = 'block'
+      const table = document.createElement('table')
+      table.style.marginLeft = 'auto'
+      table.style.marginRight = 'auto'
+      row.detail.gastos.forEach(gasto => {
+        const tr = document.createElement('tr')
+        const tdNombre = document.createElement('td')
+        const tdValor = document.createElement('td')
+        tdNombre.innerText = gasto.nombre
+        tdValor.innerText = this.miles(gasto.valor)
+        tr.style.height = 'auto'
+        tr.appendChild(tdNombre)
+        tr.appendChild(tdValor)
+        table.appendChild(tr)
+      })
+      divContainer.appendChild(table)
+      divContainer.style.display = 'block'
+    },
+    showLess (row) {
+      const divContainer = document.getElementsByClassName('detail-' + row.key)[0]
+      const buttonShowMore = document.getElementsByClassName('show-more-btn-key-' + row.key)[0]
+      const buttonShowLess = document.getElementsByClassName('show-less-btn-key-' + row.key)[0]
+      buttonShowMore.style.display = 'block'
+      buttonShowLess.style.display = 'none'
+      divContainer.innerHTML = ''
+      divContainer.style.display = 'none'
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.table-detail-container {
+  display: none;
+}
+.show-btn {
+  cursor: pointer;
+  color: $primary;
+  text-decoration: none;
+  font-size: 0.7rem;
+}
+.show-more-btn {
+  display: block;
+}
+.show-less-btn {
+  display: none;
+}
+</style>

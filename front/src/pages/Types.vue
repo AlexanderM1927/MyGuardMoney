@@ -33,6 +33,7 @@
                   :data="data"
                   :columns="columns"
                   row-key="name"
+                  :rows-per-page-options="[15]"
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props">

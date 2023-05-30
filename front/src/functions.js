@@ -73,7 +73,8 @@ export const functions = {
     },
     isNumber (n) {
       const number = n.replaceAll('.', '')
-      return /^\d+$/.test(number)
+      const numberWithoutNegative = number.replaceAll('-', '')
+      return /^\d+$/.test(numberWithoutNegative)
     },
     miles (input) {
       if (input && input !== undefined) {
@@ -81,13 +82,10 @@ export const functions = {
         let num = input.replace(/\./g, '')
         if (!this.isNumber(input)) {
           num = ''
-          console.log('numfirstif', num)
         } else {
-          if (!isNaN(num)) {
-            num = parseInt(num)
-            const options = { style: 'decimal', useGrouping: true }
-            num = num.toLocaleString('es', options)
-          }
+          num = parseInt(num)
+          const options = { style: 'decimal', useGrouping: true }
+          num = num.toLocaleString('es', options)
         }
         return num
       }
