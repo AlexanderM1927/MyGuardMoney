@@ -5,6 +5,7 @@
             <div class="col-1">
             </div>
             <div class="col-10 container">
+              Actualmente el análisis se encuentra diseñado para el año actual {{ date.formatDate(new Date(), 'YYYY') }}.
               <div v-if="valuesMonthSelected">
                   <q-select v-model="monthSelected" @input="init()" :options="options" label="Mes" required>
                     <template v-slot:prepend>
@@ -60,6 +61,7 @@
 <script>
 import { functions } from '../functions.js'
 import { Chart } from 'highcharts-vue'
+import { date } from 'quasar'
 
 export default {
   name: 'analysis',
@@ -69,6 +71,7 @@ export default {
   },
   data () {
     return {
+      date: date,
       valuesMonthSelected: null,
       dataTiposPorMes: [],
       totalComparativeTable: 0,
@@ -82,18 +85,18 @@ export default {
         value: 0, label: 'Enero'
       },
       options: [
-        { value: 0, label: 'Enero' },
-        { value: 1, label: 'Febrero' },
-        { value: 2, label: 'Marzo' },
-        { value: 3, label: 'Abril' },
-        { value: 4, label: 'Mayo' },
-        { value: 5, label: 'Junio' },
-        { value: 6, label: 'Julio' },
-        { value: 7, label: 'Agosto' },
-        { value: 8, label: 'Septiembre' },
-        { value: 9, label: 'Octubre' },
-        { value: 10, label: 'Noviembre' },
-        { value: 11, label: 'Diciembre' }
+        { value: 1, label: 'Enero' },
+        { value: 2, label: 'Febrero' },
+        { value: 3, label: 'Marzo' },
+        { value: 4, label: 'Abril' },
+        { value: 5, label: 'Mayo' },
+        { value: 6, label: 'Junio' },
+        { value: 7, label: 'Julio' },
+        { value: 8, label: 'Agosto' },
+        { value: 9, label: 'Septiembre' },
+        { value: 10, label: 'Octubre' },
+        { value: 11, label: 'Noviembre' },
+        { value: 12, label: 'Diciembre' }
       ],
       dataTipos: [],
       dataGastos: [],
@@ -182,9 +185,8 @@ export default {
     }
   },
   async mounted () {
-    const fechaActual = new Date()
-    const mesActual = fechaActual.getUTCMonth()
-    const filter = this.options.find(obj => obj.value === mesActual)
+    const mesActual = date.formatDate(new Date(), 'M')
+    const filter = this.options.find(obj => obj.value === parseInt(mesActual))
     this.monthSelected = filter
     await this.init()
   },
@@ -260,16 +262,18 @@ export default {
     selectMonth () {
       const resGastos = []
       const resIngresos = []
+      date.formatDate(new Date(), 'M')
       for (let i = 0; i < this.dataGastos.length; i++) {
-        if (new Date(this.dataGastos[i].fecha).getUTCMonth() === this.monthSelected.value) {
+        if (parseInt(date.formatDate(new Date(this.dataGastos[i].fecha), 'M')) === this.monthSelected.value) {
           resGastos.push(this.dataGastos[i])
         }
       }
       for (let i = 0; i < this.dataIngresos.length; i++) {
-        if (new Date(this.dataIngresos[i].fecha).getUTCMonth() === this.monthSelected.value) {
+        if (parseInt(date.formatDate(new Date(this.dataIngresos[i].fecha), 'M')) === this.monthSelected.value) {
           resIngresos.push(this.dataIngresos[i])
         }
       }
+      console.log('resIngresos', resIngresos)
       return {
         incoming: resIngresos,
         outcoming: resGastos

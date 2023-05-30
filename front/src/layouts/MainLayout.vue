@@ -28,7 +28,7 @@
           header
         >
           <div class="text-white text-center text-h6">MyGuardMoney</div>
-          <div class="text-white text-center text-subtitle2">Manejar tus gastos nunca había sido tan sencillo</div>
+          <div class="text-white text-center text-subtitle2">Manejar tus gastos nunca había sido tan fácil</div>
         </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
@@ -66,12 +66,12 @@ const linksData = [
     link: 'incomings'
   },
   {
-    title: 'Analisis',
+    title: 'Análisis',
     icon: 'analytics',
     link: 'analysis'
   },
   {
-    title: 'Configuracion',
+    title: 'Configuración',
     icon: 'settings',
     link: 'settings'
   }
