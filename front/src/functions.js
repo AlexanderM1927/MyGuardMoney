@@ -60,7 +60,10 @@ export const functions = {
     async deleteDatabase () {
       this.db.delete()
     },
-    isNumber (n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) },
+    isNumber (n) {
+      const number = n.replaceAll('.', '')
+      return /^\d+$/.test(number)
+    },
     miles (input) {
       if (input && input !== undefined) {
         if (typeof input === 'number') input = input.toString()
@@ -69,8 +72,9 @@ export const functions = {
           num = ''
         } else {
           if (!isNaN(num)) {
-            num = num.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g, '$1.')
-            num = num.split('').reverse().join('').replace(/^[.]/, '')
+            num = parseInt(num)
+            const options = { style: 'decimal', useGrouping: true }
+            num = num.toLocaleString('es', options)
           }
         }
         return num
