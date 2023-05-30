@@ -5,7 +5,7 @@
             <div class="col-1">
             </div>
             <div class="col-10 container">
-              <q-btn label="Actualizar aplicacion"
+              <q-btn label="Actualizar aplicación"
                 @click="updateApp"
                 class="full-width"
                 color="primary">

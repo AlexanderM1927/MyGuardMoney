@@ -6,7 +6,7 @@
             </div>
             <div class="col-10 container">
               <q-form @submit="save" v-if="options.length > 0">
-                <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput()" label="Valor">
+                <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput($event)" label="Valor">
                   <template v-slot:prepend>
                     <q-icon name="attach_money" />
                   </template>
@@ -21,23 +21,7 @@
                     <q-icon name="account_balance" />
                   </template>
                 </q-select><br>
-                <q-input color="green" label="Fecha y hora" required :rules="[val => !!val || 'Tienes que llenar este campo']" v-model="fecha">
-                  <template v-slot:prepend>
-                      <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-date v-model="fecha" mask="YYYY-MM-DD HH:mm" />
-                        </q-popup-proxy>
-                      </q-icon>
-                    </template>
-
-                    <template v-slot:append>
-                      <q-icon name="access_time" class="cursor-pointer">
-                        <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-time v-model="fecha" mask="YYYY-MM-DD HH:mm" format24h />
-                        </q-popup-proxy>
-                      </q-icon>
-                  </template>
-                </q-input><br>
+                <DateComponent v-model="fecha"></DateComponent><br>
                 <q-btn label="Agregar" type="submit" class="full-width" color="positive"></q-btn>
               </q-form>
               <div v-else>
@@ -64,12 +48,25 @@
                     </q-td>
                     <q-td key="nombre" :props="props">
                       {{ props.row.nombre }}
+                      <q-popup-edit v-model="props.row.nombre" v-slot="scope">
+                        <q-input v-model="scope.value" dense autofocus counter @keyup.enter="update(scope, props.row, 'nombre')" />
+                      </q-popup-edit>
                     </q-td>
                     <q-td key="valor" :props="props">
                       {{ miles(props.row.valor) }}
+                      <q-popup-edit v-model="props.row.valor" v-slot="scope">
+                        <q-input inputmode="numeric" color="green" v-model="scope.value" dense autofocus counter @keyup.enter="update(scope, props.row, 'valor')" @keyup="milesInput($event)" label="Valor">
+                          <template v-slot:prepend>
+                            <q-icon name="attach_money" />
+                          </template>
+                        </q-input>
+                      </q-popup-edit>
                     </q-td>
                     <q-td key="fecha" :props="props">
                       {{ props.row.fecha }}
+                      <q-popup-edit v-model="props.row.fecha" v-slot="scope">
+                        <DateComponent v-model="scope.value" :enterEventParams="{ 'scope': scope, 'row': props.row, field: 'fecha' }" @enterEvent="update"></DateComponent><br>
+                      </q-popup-edit>
                     </q-td>
                     <q-td key="ops" :props="props">
                       <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row.id)"> <q-icon size="md" name="delete"/>
@@ -89,10 +86,12 @@
 <script>
 import { functions } from '../functions.js'
 import { date } from 'quasar'
+import DateComponent from '../components/DateComponent.vue'
 
 export default {
   name: 'expenses',
   mixins: [functions],
+  components: { DateComponent },
   data () {
     return {
       gasto: {},
@@ -151,8 +150,9 @@ export default {
       else r = obj
       return r
     },
-    milesInput () {
-      this.gasto.valor = this.miles(this.gasto.valor)
+    update (scope, row, fieldEditing) {
+      row[fieldEditing] = scope.value
+      this.updateDataOnCollectionById('gastos', row.id, row)
     }
   }
 }

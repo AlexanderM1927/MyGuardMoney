@@ -12,8 +12,8 @@
                       <q-icon name="event" />
                     </template>
                   </q-select><br>
-                  <highcharts :options="chartOptions1"></highcharts>
-                  <highcharts :options="chartOptions2"></highcharts>
+                  <highcharts :options="chartOptionsGastosPorDiaDelMes"></highcharts>
+                  <highcharts :options="chartOptionsGastosPorCategoria"></highcharts>
                   <br>
                   <h6 class="text-h6 text-center">Tabla comparativa Ingresos - Gastos</h6>
                   <q-table
@@ -45,11 +45,12 @@
                         <q-td key="incoming">
                         </q-td>
                         <q-td key="outcoming" class="text-center">
-                          {{ miles(totalComparativeTable) }}
+                          <b>{{ miles(totalComparativeTable) }}</b>
                         </q-td>
                       </q-tr>
                     </template>
                   </q-table>
+                  <highcharts :options="chartOptionsIngresosVsGastos"></highcharts>
               </div>
             </div>
             <div class="col-1"></div>
@@ -71,6 +72,8 @@ export default {
   },
   data () {
     return {
+      totalIngresosComparative: 0,
+      totalGastosComparative: 0,
       date: date,
       valuesMonthSelected: null,
       dataTiposPorMes: [],
@@ -100,7 +103,7 @@ export default {
       ],
       dataTipos: [],
       dataGastos: [],
-      chartOptions1: {
+      chartOptionsGastosPorDiaDelMes: {
         chart: {
           type: 'area'
         },
@@ -155,7 +158,7 @@ export default {
           color: '#E9BC36'
         }]
       },
-      chartOptions2: {
+      chartOptionsGastosPorCategoria: {
         chart: {
           type: 'pie'
         },
@@ -181,6 +184,33 @@ export default {
         title: {
           text: 'Gastos por categoria'
         }
+      },
+      chartOptionsIngresosVsGastos: {
+        chart: {
+          type: 'pie'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '{point.name}: {point.percentage:.1f}%'
+            },
+            showInLegend: true
+          }
+        },
+        colorAxis: {
+          minColor: '#F2f2f2',
+          maxColor: '#E9BC36'
+        },
+        series: [{
+          colorByPoint: true,
+          data: [{ name: '', value: '1', color: '#E9BC36' }]
+        }],
+        title: {
+          text: 'Ingresos vs Gastos'
+        }
       }
     }
   },
@@ -196,6 +226,7 @@ export default {
       this.organiceByType()
       this.organiceByMonth()
       this.fillTable()
+      this.generateChartComparative()
     },
     fillTable () {
       this.dataCompativeTable = []
@@ -210,7 +241,7 @@ export default {
             outcoming: 0
           }
         )
-        this.totalComparativeTable = parseInt(this.totalComparativeTable) + parseInt(ingresosMesActual[i].valor)
+        this.totalIngresosComparative += parseInt(ingresosMesActual[i].valor)
       }
       for (let i = 0; i < gastosPorTipoMesActual.length; i++) {
         this.dataCompativeTable.push(
@@ -220,8 +251,9 @@ export default {
             incoming: 0
           }
         )
-        this.totalComparativeTable = parseInt(this.totalComparativeTable) - parseInt(gastosPorTipoMesActual[i].valor)
+        this.totalGastosComparative += parseInt(gastosPorTipoMesActual[i].valor)
       }
+      this.totalComparativeTable = parseInt(this.totalIngresosComparative) - parseInt(this.totalGastosComparative)
     },
     async getData () {
       this.dataTipos = await this.getDataCollection('tipos', 'id', 'desc')
@@ -230,7 +262,7 @@ export default {
       this.valuesMonthSelected = this.selectMonth()
     },
     organiceByType () {
-      this.chartOptions2.series[0].data = []
+      this.chartOptionsGastosPorCategoria.series[0].data = []
       for (let i = 0; i < this.dataTipos.length; i++) {
         this.dataTiposPorMes[i] = {
           id: this.dataTipos[i].id,
@@ -243,8 +275,13 @@ export default {
             this.dataTiposPorMes[i].valor += parseInt(this.valuesMonthSelected.outcoming[j].valor)
           }
         }
-        this.chartOptions2.series[0].data.push({ name: this.dataTiposPorMes[i].nombre, y: this.dataTiposPorMes[i].valor, color: this.dataTiposPorMes[i].color })
+        this.chartOptionsGastosPorCategoria.series[0].data.push({ name: this.dataTiposPorMes[i].nombre, y: this.dataTiposPorMes[i].valor, color: this.dataTiposPorMes[i].color })
       }
+    },
+    generateChartComparative () {
+      this.chartOptionsIngresosVsGastos.series[0].data = []
+      this.chartOptionsIngresosVsGastos.series[0].data.push({ name: 'Ingresos', y: this.totalIngresosComparative, color: '#21BA45' })
+      this.chartOptionsIngresosVsGastos.series[0].data.push({ name: 'Gastos', y: this.totalGastosComparative, color: '#FF0000' })
     },
     organiceByMonth () {
       const dias = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -257,7 +294,7 @@ export default {
           dias[dia] += parseInt(this.valuesMonthSelected.outcoming[i].valor)
         }
       }
-      this.chartOptions1.series[0].data = dias
+      this.chartOptionsGastosPorDiaDelMes.series[0].data = dias
     },
     selectMonth () {
       const resGastos = []
@@ -273,7 +310,6 @@ export default {
           resIngresos.push(this.dataIngresos[i])
         }
       }
-      console.log('resIngresos', resIngresos)
       return {
         incoming: resIngresos,
         outcoming: resGastos

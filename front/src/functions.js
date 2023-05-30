@@ -57,6 +57,17 @@ export const functions = {
           console.log(error)
         })
     },
+    async updateDataOnCollectionById (collection, id, data) {
+      this.db.collection(collection)
+        .doc({ id: id })
+        .set(data)
+        .then(response => {
+          console.log('Delete successful, now do something.')
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
     async deleteDatabase () {
       this.db.delete()
     },
@@ -79,6 +90,9 @@ export const functions = {
         }
         return num
       }
+    },
+    milesInput (event) {
+      event.target.value = this.miles(event.target.value)
     },
     goTo (location) {
       this.$router.push('/' + location).catch(err => {

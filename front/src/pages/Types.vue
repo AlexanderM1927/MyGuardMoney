@@ -12,7 +12,7 @@
                   </template>
                 </q-input>
                 <br>
-                <q-input class="my-input" label="Color" v-model="type.color" required>
+                <q-input class="my-input" label="Color (click en el icono)" v-model="type.color" required>
                   <template v-slot:prepend>
                     <q-icon name="palette">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
@@ -38,6 +38,9 @@
                     <q-tr :props="props">
                       <q-td key="name" :props="props">
                         {{ props.row.nombre }}
+                      </q-td>
+                      <q-td key="color" :props="props">
+                        <div class="type-color" :style="`background: ${props.row.color}`" />
                       </q-td>
                       <q-td key="ops" :props="props">
                         <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row)"> <q-icon size="md" name="delete"/>
@@ -65,6 +68,7 @@ export default {
       type: {},
       columns: [
         { name: 'name', align: 'center', label: 'Nombre', field: 'name', sortable: true },
+        { name: 'color', align: 'center', label: 'Color', field: 'color', sortable: true },
         { name: 'ops', align: 'center', label: 'Opciones', field: 'ops', sortable: true }
       ],
       data: []
@@ -107,3 +111,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.type-color {
+  width: 1rem;
+  height: 1rem;
+  content: ' ';
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
