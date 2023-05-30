@@ -38,9 +38,23 @@
                     <q-tr :props="props">
                       <q-td key="name" :props="props">
                         {{ props.row.nombre }}
+                        <q-popup-edit v-model="props.row.nombre" v-slot="scope">
+                          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="update(scope, props.row, 'nombre')" />
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="color" :props="props">
                         <div class="type-color" :style="`background: ${props.row.color}`" />
+                        <q-popup-edit v-model="props.row.color" v-slot="scope">
+                          <q-input class="my-input" label="Color (click en el icono)" v-model="scope.value" @keyup.enter="update(scope, props.row, 'color')" required>
+                            <template v-slot:prepend>
+                              <q-icon name="palette">
+                                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                                  <q-color v-model="scope.value" />
+                                </q-popup-proxy>
+                              </q-icon>
+                            </template>
+                          </q-input>
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="ops" :props="props">
                         <a class="text-red" style="cursor: pointer; padding: 5px;" @click="del(props.row)"> <q-icon size="md" name="delete"/>
@@ -107,6 +121,10 @@ export default {
         this.data.splice(index, 1)
         await this.deleteDataCollection('tipos', tipo.id)
       }
+    },
+    update (scope, row, fieldEditing) {
+      row[fieldEditing] = scope.value
+      this.updateDataOnCollectionById('tipos', row.id, row)
     }
   }
 }
