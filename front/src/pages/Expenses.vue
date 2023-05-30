@@ -6,7 +6,7 @@
             </div>
             <div class="col-10 container">
               <q-form @submit="save" v-if="options.length > 0">
-                <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput($event)" label="Valor">
+                <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput($event, gasto)" label="Valor">
                   <template v-slot:prepend>
                     <q-icon name="attach_money" />
                   </template>

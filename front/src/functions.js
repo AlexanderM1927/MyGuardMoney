@@ -81,6 +81,7 @@ export const functions = {
         let num = input.replace(/\./g, '')
         if (!this.isNumber(input)) {
           num = ''
+          console.log('numfirstif', num)
         } else {
           if (!isNaN(num)) {
             num = parseInt(num)
@@ -90,9 +91,13 @@ export const functions = {
         }
         return num
       }
+      return ''
     },
-    milesInput (event) {
-      event.target.value = this.miles(event.target.value)
+    milesInput (event, obj) {
+      const inputValue = this.miles(event.target.value)
+      event.target.value = inputValue
+      obj.valor = inputValue
+      this.$emit('input', inputValue)
     },
     goTo (location) {
       this.$router.push('/' + location).catch(err => {
