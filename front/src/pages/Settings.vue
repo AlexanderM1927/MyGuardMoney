@@ -18,6 +18,10 @@
                 class="full-width"
                 color="primary">
               </q-btn>
+              <br>
+              <q-separator />
+              <br>
+              Para agregar esta aplicación en tu dispositivo iOS, presiona el boton del navegador para compartir, y agregarlo a tu pantalla de inicio (Add to Home Screen)
             </div>
             <div class="col-1"></div>
         </div>
