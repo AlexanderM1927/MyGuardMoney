@@ -2,9 +2,7 @@
   <q-page>
     <div class="q-pa-md">
         <div class="row">
-            <div class="col-1">
-            </div>
-            <div class="col-10 container">
+            <div class="col-12 container">
               Actualmente el análisis se encuentra diseñado para el año actual {{ date.formatDate(new Date(), 'YYYY') }}.
               <div v-if="valuesMonthSelected">
                   <q-select v-model="monthSelected" @input="init()" :options="options" label="Mes" required>
@@ -69,7 +67,6 @@
                   <highcharts :options="chartOptionsIngresosVsGastos"></highcharts>
               </div>
             </div>
-            <div class="col-1"></div>
         </div>
     </div>
   </q-page>

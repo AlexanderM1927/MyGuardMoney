@@ -2,9 +2,7 @@
   <q-page>
     <div class="q-pa-md">
         <div class="row">
-            <div class="col-1">
-            </div>
-            <div class="col-10 container">
+            <div class="col-12 container">
               <q-form @submit="save" v-if="options.length > 0">
                 <q-input inputmode="numeric" color="green" v-model="gasto.valor" @keyup="milesInput($event, gasto)" label="Valor">
                   <template v-slot:prepend>
@@ -78,7 +76,6 @@
                 </template>
               </q-table>
             </div>
-            <div class="col-1"></div>
         </div>
     </div>
   </q-page>

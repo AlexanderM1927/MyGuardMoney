@@ -2,9 +2,7 @@
   <q-page>
     <div class="q-pa-md">
         <div class="row">
-            <div class="col-1">
-            </div>
-            <div class="col-10 container">
+            <div class="col-12 container">
               <q-form @submit="save">
                 <q-input color="green" v-model="type.nombre" required label="Nombre">
                   <template v-slot:prepend>
@@ -66,7 +64,6 @@
                   </template>
                 </q-table>
             </div>
-            <div class="col-1"></div>
         </div>
     </div>
   </q-page>
