@@ -29,7 +29,7 @@ class ReminderController extends Controller
 
             return response()->json([
                 'reminders' => $reminders
-            ], 204);
+            ], 200);
         }
         return response()->json([
             'reminders' => []
@@ -74,9 +74,12 @@ class ReminderController extends Controller
         return Reminder::all();
     }
 
-    public function deleteReminder()
+    public function deleteReminder($id)
     {
-        return Reminder::all();
+        Reminder::find($id)->delete();
+        return response()->json([
+            'message' => 'Reminder deleted.'
+        ], 200);
     }
 
     public function runReminders()

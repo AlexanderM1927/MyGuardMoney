@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import FullCalendar from 'vue-full-calendar'
 
 import routes from './routes'
 
@@ -11,7 +12,7 @@ import HighchartsVue from 'highcharts-vue'
 Treemap(Highcharts)
 Itemseries(Highcharts)
 
-Vue.use(VueRouter, Highcharts, Treemap, Itemseries, HighchartsVue)
+Vue.use(VueRouter, Highcharts, Treemap, Itemseries, HighchartsVue, FullCalendar)
 
 /*
  * If not building with SSR mode, you can

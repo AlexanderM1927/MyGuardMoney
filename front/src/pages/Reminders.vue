@@ -22,6 +22,9 @@
                   <q-btn label="Agregar" type="submit" class="full-width" color="positive"></q-btn>
               </q-form>
               <br>
+              <q-separator inset />
+              <br>
+              <FullCalendar ref="calendar" :events="data" :config="config" v-if="eventsLoaded" />
             </div>
             <div class="col-12 container" v-else>
               Primero tienes que configurar un correo electrónico.
@@ -33,10 +36,13 @@
 </template>
 
 <script>
+import 'fullcalendar/dist/fullcalendar.css'
 import { functions } from '../functions.js'
 import { date } from 'quasar'
 import DateComponent from '../components/DateComponent.vue'
 import ReminderService from '../services/ReminderService'
+import { FullCalendar } from 'vue-full-calendar'
+import InfoReminder from 'components/dialogs/InfoReminder'
 
 const initialReminder = {
   frecuencia: { value: 'everyday', label: 'Todos los días' }
@@ -45,7 +51,7 @@ const initialReminder = {
 export default {
   name: 'incomings',
   mixins: [functions],
-  components: { DateComponent },
+  components: { DateComponent, FullCalendar },
   data () {
     return {
       recordatorio: initialReminder,
@@ -62,17 +68,110 @@ export default {
       ],
       fecha: date.formatDate(Date.now(), 'DD'),
       hora: date.formatDate(Date.now(), 'HH:mm'),
-      token: JSON.parse(localStorage.getItem('user')).token
+      token: JSON.parse(localStorage.getItem('user')).token,
+      config: {},
+      eventsLoaded: true
     }
   },
   created () {
+    this.getCalendarInfo()
     this.getData()
   },
   methods: {
     async getData () {
+      this.eventsLoaded = false
       const request = await ReminderService.index(this.token)
-      console.log('request', request)
-      this.data = await this.getDataCollection('recordatorios', 'id', 'desc')
+      const reminders = request.data.reminders
+      const year = date.formatDate(new Date(), 'YYYY')
+      const month = date.formatDate(new Date(), 'MM')
+      this.data = []
+      for (let i = 0; i < reminders.length; i++) {
+        const hours = reminders[i].hour.substring(0, reminders[i].hour.indexOf(':'))
+        const minutes = reminders[i].hour.slice(reminders[i].hour.indexOf(':') + 1)
+        const reminder = {
+          title: reminders[i].name,
+          start: date.formatDate(new Date(year, month - 1, reminders[i].day, hours, minutes), 'YYYY-MM-DD HH:mm'),
+          description: reminders[i].detail,
+          _id: reminders[i].id,
+          idReminder: reminders[i].id
+        }
+        if (reminders[i].frequency === 'onceamonth') {
+          this.data.push(reminder)
+        } else {
+          for (let j = 0; j < 31; j++) {
+            const newDate = date.addToDate(reminder.start, { days: j })
+            const newReminder = {
+              ...reminder
+            }
+            newReminder.start = date.formatDate(newDate, 'YYYY-MM-DD HH:mm')
+            newReminder.id = reminders[i].id + j
+            newReminder.title += j
+            this.data.push(newReminder)
+          }
+        }
+      }
+      this.eventsLoaded = true
+      console.log('this.data', this.data)
+    },
+    getCalendarInfo () {
+      const _this = this
+      const lang = {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+        daysLong: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        days: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        today: 'Hoy',
+        month: 'Mes',
+        week: 'Semana',
+        day: 'Día',
+        list: 'Lista'
+      }
+      this.config = {
+        defaultView: 'month',
+        editable: false,
+        displayEventTime: false,
+        header: {
+          left: 'prev,today,next',
+          right: 'month,listMonth,basicWeek,basicDay'
+        },
+        buttonText: {
+          today: lang.today,
+          month: lang.month,
+          week: lang.week,
+          day: lang.day,
+          listMonth: lang.list
+        },
+        allDayDefault: true,
+        height: 'auto',
+        monthNames: lang.months,
+        monthNamesShort: lang.monthsShort,
+        dayNames: lang.daysLong,
+        dayNamesShort: lang.days,
+        eventTextColor: 'white',
+        eventClick: function (reminder) {
+          _this.showEvent(reminder)
+        },
+        eventMouseover: function (event, jsEvent, view) {},
+        eventMouseout: function (event, jsEvent, view) {}
+      }
+    },
+    showEvent (reminder) {
+      this.$q.dialog({
+        component: InfoReminder,
+        parent: this,
+        reminder: reminder
+      }).onOk(() => {
+        // OK
+      }).onCancel(() => {
+        ReminderService.delete(reminder.idReminder).then((data) => {
+          this.alert('positive', 'Recordatorio eliminado')
+          this.getData()
+        }).catch((error) => {
+          this.alert('negative', error.response.data.message)
+        })
+      }).onDismiss(() => {
+        // OK
+      })
     },
     save () {
       if (this.recordatorio.nombre !== '') {
@@ -84,26 +183,17 @@ export default {
           token: this.token
         }
         ReminderService.store(data).then(() => {
-          this.data.push(this.recordatorio)
           this.recordatorio = {
             frecuencia: {
               value: 'everyday', label: 'Todos los días'
             }
           }
           this.alert('positive', 'Recordatorio agregado')
+          this.getData()
         }).catch((error) => {
           this.alert('negative', error.response.data.message)
         })
       }
-    },
-    async del (id) {
-      const index = this.data.findIndex(data => data.id === id)
-      this.data.splice(index, 1)
-      await this.deleteDataCollection('recordatorios', id)
-    },
-    update (scope, row, fieldEditing) {
-      row[fieldEditing] = scope.value
-      this.updateDataOnCollectionById('recordatorios', row.id, row)
     }
   }
 }
