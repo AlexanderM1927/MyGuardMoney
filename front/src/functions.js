@@ -62,7 +62,7 @@ export const functions = {
         .doc({ id: id })
         .set(data)
         .then(response => {
-          console.log('Delete successful, now do something.')
+          this.alert('positive', 'Datos actualizados correctamente')
         })
         .catch(error => {
           console.log(error)
