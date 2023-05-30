@@ -11,7 +11,7 @@
       <template v-if="!onlyDay" v-slot:append>
         <q-icon name="access_time" class="cursor-pointer">
           <q-popup-proxy transition-show="scale" transition-hide="scale">
-            <q-time v-model="fecha"  @input="handleInput" mask="HH:mm" format24h />
+            <q-time v-model="fecha"  @input="handleInput" :mask="`${onlyHour ? 'HH:mm' : 'YYYY-MM-DD HH:mm'}`" format24h />
           </q-popup-proxy>
         </q-icon>
     </template>
