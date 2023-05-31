@@ -71,6 +71,11 @@ const linksData = [
     link: 'analysis'
   },
   {
+    title: 'Recordatorios',
+    icon: 'notifications_active',
+    link: 'reminders'
+  },
+  {
     title: 'Configuración',
     icon: 'settings',
     link: 'settings'
