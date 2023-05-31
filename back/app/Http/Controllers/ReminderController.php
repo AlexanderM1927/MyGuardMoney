@@ -117,12 +117,18 @@ class ReminderController extends Controller
             }
         }
 
+        $reminderIds = [];
         foreach ($remindersToExecute as $key => $reminder) {
+            $reminderIds[] = $reminder->id;
             $content = "";
             $content .= '<b>Nombre:</b><br>'.$reminder->name.'<br>';
             $content .= '<b>Detalles:</b><br>'.$reminder->detail.'<br><br><br>';
             Mail::to($reminder->email->email)->send(new MessageReminder('Recordatorio', $content, $reminder->email->email));
         }
+
+        Reminder::whereIn('id', $reminderIds)->update([
+            'last_executed' => $currentDate
+        ]);
 
         return $remindersToExecute;
     }
