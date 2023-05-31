@@ -119,7 +119,7 @@ class ReminderController extends Controller
 
         foreach ($remindersToExecute as $key => $reminder) {
             $content = "";
-            $content .= '<b>Nombre:</b><br>'.$reminder->name.'<br';
+            $content .= '<b>Nombre:</b><br>'.$reminder->name.'<br>';
             $content .= '<b>Detalles:</b><br>'.$reminder->detail.'<br><br><br>';
             Mail::to($reminder->email->email)->send(new MessageReminder('Recordatorio', $content, $reminder->email->email));
         }
