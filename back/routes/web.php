@@ -21,4 +21,4 @@ $router->get('/reminders-run', ['as' => 'reminder.run', 'uses' => 'ReminderContr
 // Emails
 $router->get('/emails/{token}', ['as' => 'reminder.index', 'uses' => 'EmailController@checkIfEmailIsVerfied']);
 $router->post('/emails', ['as' => 'reminder.store', 'uses' => 'EmailController@storeEmail']);
-$router->get('/emails/{token}', ['as' => 'reminder.update', 'uses' => 'EmailController@verifyEmail']);
+$router->get('/emails-verify/{token}', ['as' => 'reminder.update', 'uses' => 'EmailController@verifyEmail']);

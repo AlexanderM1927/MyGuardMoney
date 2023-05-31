@@ -24,7 +24,7 @@
               <br>
               <q-separator inset />
               <br>
-              <FullCalendar ref="calendar" :events="data" :config="config" v-if="eventsLoaded" />
+              <FullCalendar ref="calendar" :events="data" :config="config" />
             </div>
             <div class="col-12 container" v-else>
               Primero tienes que configurar un correo electrónico.
@@ -69,8 +69,7 @@ export default {
       fecha: date.formatDate(Date.now(), 'DD'),
       hora: date.formatDate(Date.now(), 'HH:mm'),
       token: JSON.parse(localStorage.getItem('user')).token,
-      config: {},
-      eventsLoaded: true
+      config: {}
     }
   },
   created () {
@@ -79,7 +78,6 @@ export default {
   },
   methods: {
     async getData () {
-      this.eventsLoaded = false
       const request = await ReminderService.index(this.token)
       const reminders = request.data.reminders
       const year = date.formatDate(new Date(), 'YYYY')
@@ -92,26 +90,22 @@ export default {
           title: reminders[i].name,
           start: date.formatDate(new Date(year, month - 1, reminders[i].day, hours, minutes), 'YYYY-MM-DD HH:mm'),
           description: reminders[i].detail,
-          _id: reminders[i].id,
-          idReminder: reminders[i].id
+          _id: reminders[i].id
         }
         if (reminders[i].frequency === 'onceamonth') {
           this.data.push(reminder)
         } else {
-          for (let j = 0; j < 31; j++) {
+          for (let j = 1; j < 31; j++) {
             const newDate = date.addToDate(reminder.start, { days: j })
             const newReminder = {
               ...reminder
             }
             newReminder.start = date.formatDate(newDate, 'YYYY-MM-DD HH:mm')
-            newReminder.id = reminders[i].id + j
-            newReminder.title += j
             this.data.push(newReminder)
           }
         }
       }
-      this.eventsLoaded = true
-      console.log('this.data', this.data)
+      console.log(this.data)
     },
     getCalendarInfo () {
       const _this = this
@@ -163,11 +157,14 @@ export default {
       }).onOk(() => {
         // OK
       }).onCancel(() => {
-        ReminderService.delete(reminder.idReminder).then((data) => {
+        this.activateLoading()
+        ReminderService.delete(reminder._id).then((data) => {
           this.alert('positive', 'Recordatorio eliminado')
           this.getData()
+          this.disableLoading()
         }).catch((error) => {
           this.alert('negative', error.response.data.message)
+          this.disableLoading()
         })
       }).onDismiss(() => {
         // OK
@@ -182,6 +179,7 @@ export default {
           hour: this.hora,
           token: this.token
         }
+        this.activateLoading()
         ReminderService.store(data).then(() => {
           this.recordatorio = {
             frecuencia: {
@@ -190,8 +188,10 @@ export default {
           }
           this.alert('positive', 'Recordatorio agregado')
           this.getData()
+          this.disableLoading()
         }).catch((error) => {
           this.alert('negative', error.response.data.message)
+          this.disableLoading()
         })
       }
     }

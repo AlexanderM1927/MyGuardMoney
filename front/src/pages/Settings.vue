@@ -71,11 +71,14 @@ export default {
           email: data,
           token: this.generateToken()
         }
+        this.activateLoading()
         EmailService.store(userObj).then((data) => {
           localStorage.setItem('user', JSON.stringify(userObj))
           this.alert('positive', 'Se envió un correo para verificar tu cuenta, por favor sigue las instrucciones.')
+          this.disableLoading()
         }).catch((error) => {
           this.alert('negative', error.response.data.message)
+          this.disableLoading()
         })
       }).onCancel(() => {
         // console.log('>>>> Cancel')
