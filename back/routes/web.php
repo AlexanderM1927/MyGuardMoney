@@ -11,6 +11,10 @@
 |
 */
 
+$router->get('/test', function () {
+    return 'it works';
+});
+
 // Reminders
 $router->get('/reminders/{token}', ['as' => 'reminder.index', 'uses' => 'ReminderController@indexReminder']);
 $router->post('/reminders', ['as' => 'reminder.store', 'uses' => 'ReminderController@storeReminder']);
