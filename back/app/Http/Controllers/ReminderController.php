@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Email;
 use App\Reminder;
+use App\Mail\MessageReminder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ReminderController extends Controller
 {
@@ -84,6 +86,44 @@ class ReminderController extends Controller
 
     public function runReminders()
     {
-        return Reminder::all();
+        date_default_timezone_set('America/Bogota');
+        $reminders = Reminder::with('email')->get();
+        $currentDate = new \DateTime();
+        $currentHour = date('H');
+        $currentMinute = date('i');
+        $remindersToExecute = [];
+
+        foreach ($reminders as $reminder) {
+            $lastExecuted = new \DateTime($reminder->last_executed);
+            $diffLastExecuted = $lastExecuted->diff($currentDate);
+            $hourReminder = substr($reminder->hour, 0, strpos($reminder->hour, ':'));
+            $minuteReminder = substr($reminder->hour, strpos($reminder->hour, ':') + 1);
+
+            if (empty($reminder->last_executed) ||
+                (intval($diffLastExecuted->m) >= 1 && $reminder->frequency == 'onceamonth') ||
+                (intval($diffLastExecuted->days) >= 1 && $reminder->frequency == 'everyday')
+            ) {
+                if ($reminder->frequency == 'onceamonth' && $reminder->day > date('t')) {
+                    if ($currentHour > $hourReminder || ($currentHour == $hourReminder && $currentMinute > $minuteReminder)) {
+                        $remindersToExecute[] = $reminder;
+                    }
+                } elseif ($reminder->frequency == 'onceamonth' && $reminder->day == date('j')) {
+                    $remindersToExecute[] = $reminder;
+                } elseif ($reminder->frequency == 'everyday') {
+                    if ($currentHour > $hourReminder || ($currentHour == $hourReminder && $currentMinute > $minuteReminder)) {
+                        $remindersToExecute[] = $reminder;
+                    }
+                }
+            }
+        }
+
+        foreach ($remindersToExecute as $key => $reminder) {
+            $content = "";
+            $content .= '<b>Nombre:</b><br>'.$reminder->name.'<br';
+            $content .= '<b>Detalles:</b><br>'.$reminder->detail.'<br><br><br>';
+            Mail::to($reminder->email->email)->send(new MessageReminder('Recordatorio', $content, $reminder->email->email));
+        }
+
+        return $remindersToExecute;
     }
 }

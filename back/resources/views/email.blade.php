@@ -8,7 +8,7 @@
 <body>
     <h2>Gracias por usar MyGuardMoney, tienes un recordatorio para hoy.</h2><br>
     <hr>
-    {{ $content }}
+    <?=nl2br($content)?>
     <hr>
     <b>MyGuardMoney</b>
 </body>

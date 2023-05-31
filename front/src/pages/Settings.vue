@@ -54,6 +54,7 @@ export default {
     },
     async deleteData () {
       await this.deleteDatabase()
+      localStorage.removeItem('user')
       this.alert('positive', 'La base de datos fue eliminada exitosamente')
     },
     addEmail () {
