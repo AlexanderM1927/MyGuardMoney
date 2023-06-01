@@ -9,7 +9,7 @@
     <h2>Gracias por usar MyGuardMoney.</h2><br>
     <h3>Ahora debes confirmar tu correo electrónico</h3>
     <hr>
-    <a href="{{ env('APP_URL') }}/emails-verify/{{ $content }}" target="_blank">Confirmar</a>
+    <a href="{{ env('APP_URL') }}/v1/emails-verify/{{ $content }}" target="_blank">Confirmar</a>
     <hr>
     <b>MyGuardMoney</b>
 </body>
