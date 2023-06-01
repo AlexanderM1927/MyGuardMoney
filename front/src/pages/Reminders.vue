@@ -95,7 +95,7 @@ export default {
         if (reminders[i].frequency === 'onceamonth') {
           this.data.push(reminder)
         } else {
-          for (let j = 1; j < 31; j++) {
+          for (let j = 0; j < 31; j++) {
             const newDate = date.addToDate(reminder.start, { days: j })
             const newReminder = {
               ...reminder
