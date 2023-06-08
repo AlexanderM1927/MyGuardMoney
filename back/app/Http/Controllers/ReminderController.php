@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Email;
 use App\Reminder;
-use App\Mail\MessageReminder;
 use App\Jobs\ReminderJob;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class ReminderController extends Controller
 {
