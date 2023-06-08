@@ -2,6 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Mail\MessageReminder;
+use Illuminate\Support\Facades\Mail;
+
 class ReminderJob extends Job
 {
     private $reminder;
