@@ -16,7 +16,7 @@ class Email extends Model
         'email', 'token', 'is_verified'
     ];
 
-    public function reminders(): hasMany
+    public function reminders(): HasMany
     {
         return $this->hasMany(Reminder::class);
     }
