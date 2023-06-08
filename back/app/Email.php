@@ -18,6 +18,6 @@ class Email extends Model
 
     public function reminders(): hasMany
     {
-        return $this->HasMany(Reminder::class);
+        return $this->hasMany(Reminder::class);
     }
 }
