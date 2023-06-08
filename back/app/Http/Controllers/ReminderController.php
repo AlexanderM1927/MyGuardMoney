@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Email;
 use App\Reminder;
 use App\Mail\MessageReminder;
+use App\Jobs\ReminderJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -153,7 +154,7 @@ class ReminderController extends Controller
             $content = "";
             $content .= '<b>Nombre:</b><br>'.$reminder->name.'<br>';
             $content .= '<b>Detalles:</b><br>'.$reminder->detail.'<br><br><br>';
-            Mail::to($reminder->email->email)->send(new MessageReminder('Recordatorio', $content, $reminder->email->email));
+            dispatch(new ReminderJob($reminder, $content));
         }
 
         Reminder::whereIn('id', $reminderIds)->update([
