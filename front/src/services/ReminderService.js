@@ -12,5 +12,8 @@ export default {
   },
   delete (id) {
     return Api().delete('reminders/' + id)
+  },
+  deleteAllReminders (token) {
+    return Api().delete('reminders-all/' + token)
   }
 }

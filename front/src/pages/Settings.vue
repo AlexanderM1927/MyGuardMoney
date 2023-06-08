@@ -27,6 +27,14 @@
               <br>
               <q-separator />
               <br>
+              <q-btn label="Eliminar recordatorios"
+                @click="deleteReminders"
+                class="full-width"
+                color="primary">
+              </q-btn>
+              <br>
+              <q-separator />
+              <br>
               Para agregar esta aplicación en tu dispositivo iOS, presiona el boton del navegador para compartir, y agregarlo a tu pantalla de inicio (Add to Home Screen)
             </div>
         </div>
@@ -35,6 +43,7 @@
 </template>
 
 <script>
+import ReminderService from 'src/services/ReminderService'
 import { functions } from '../functions.js'
 import EmailService from '../services/EmailService'
 
@@ -48,6 +57,18 @@ export default {
   created () {
   },
   methods: {
+    deleteReminders () {
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (user && user.token) {
+        ReminderService.deleteAllReminders(user.token).then((data) => {
+          this.alert('positive', 'Se eliminaron los recordatorios vinculados al correo electrónico registrado en la app.')
+          this.disableLoading()
+        }).catch((error) => {
+          this.alert('negative', error.response.data.message)
+          this.disableLoading()
+        })
+      }
+    },
     updateApp () {
       caches.keys().then((keyList) => Promise.all(keyList.map((key) => caches.delete(key))))
       location.reload()

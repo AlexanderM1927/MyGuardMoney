@@ -15,4 +15,9 @@ class Email extends Model
     protected $fillable = [
         'email', 'token', 'is_verified'
     ];
+
+    public function reminders(): hasMany
+    {
+        return $this->HasMany(Reminder::class);
+    }
 }

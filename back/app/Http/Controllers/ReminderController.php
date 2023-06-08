@@ -84,6 +84,36 @@ class ReminderController extends Controller
         ], 200);
     }
 
+    public function deleteAllReminders($token)
+    {
+        $emailByToken = Email::where([
+            ['token', $token]
+        ])->first();
+
+        if ($emailByToken) {
+            $emails = Email::where([
+                ['email', $emailByToken->email]
+            ])->with('reminders')->get();
+
+            $reminderIdsToDelete = [];
+            foreach ($emails as $key => $emailObj) {
+                foreach ($emailObj->reminders as $key => $reminder) {
+                    $reminderIdsToDelete[] = $reminder->id;
+                }
+            }
+
+            \Log::info('$reminderIdsToDelete');
+            \Log::info($reminderIdsToDelete);
+
+            Reminder::whereIn('id', $reminderIdsToDelete)->delete();
+        }
+
+
+        return response()->json([
+            'message' => 'Reminders deleted.'
+        ], 200);
+    }
+
     public function runReminders()
     {
         date_default_timezone_set('America/Bogota');

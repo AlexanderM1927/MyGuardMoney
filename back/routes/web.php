@@ -21,6 +21,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
     $router->post('/reminders', ['as' => 'reminder.store', 'uses' => 'ReminderController@storeReminder']);
     $router->put('/reminders', ['as' => 'reminder.update', 'uses' => 'ReminderController@updateReminder']);
     $router->delete('/reminders/{id}', ['as' => 'reminder.delete', 'uses' => 'ReminderController@deleteReminder']);
+    $router->delete('/reminders-all/{token}', ['as' => 'reminder.delete-all', 'uses' => 'ReminderController@deleteAllReminders']);
     $router->get('/reminders-run', ['as' => 'reminder.run', 'uses' => 'ReminderController@runReminders']);
 
     // Emails
