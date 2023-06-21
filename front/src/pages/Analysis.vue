@@ -244,6 +244,8 @@ export default {
     fillTable () {
       this.dataCompativeTable = []
       this.totalComparativeTable = 0
+      this.totalIngresosComparative = 0
+      this.totalGastosComparative = 0
       const ingresosMesActual = this.valuesMonthSelected.incoming
       const gastosPorTipoMesActual = this.dataTiposPorMes
       for (let i = 0; i < ingresosMesActual.length; i++) {
