@@ -26,7 +26,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --1
-COPY composer.json composer-lock.json ./
+COPY composer.json composer.lock ./
 RUN composer install
 
 COPY . /usr/src/back-app/
