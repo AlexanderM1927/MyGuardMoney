@@ -30,6 +30,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --1
 RUN composer install
 
-EXPOSE 8000
+EXPOSE 8001
 
 CMD ["php", "-S", "0.0.0.0:8001", "-t", "public"]
