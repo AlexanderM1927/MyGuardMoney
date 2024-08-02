@@ -4,13 +4,6 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
-        stage("Check php version") {
-            steps {
-               sh 'php --version'
-               sh 'composer install'
-               sh 'composer --version'
-            }
-        }
         stage('Frontend prepare') {
             tools {
                 nodejs 'node-21.11.1'
@@ -31,6 +24,15 @@ pipeline {
                     sh 'quasar build -m pwa'
                     sh 'chown -R jenkins:jenkins ./dist/pwa'
                     sh 'rsync -a ./dist/pwa/. /var/lib/jenkins/workspace/myguardmoney/back/public'
+                }
+            }
+        }
+        stage('Backend installed dependencies and run migrations') {
+            steps {
+                dir('./back') {
+                    sh 'composer install'
+                    sh 'composer dump-autoload'
+                    sh 'php artisan migrate'
                 }
             }
         }
