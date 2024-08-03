@@ -21,12 +21,14 @@ class EmailController extends Controller
 
     public function storeEmail(Request $request)
     {
-        $email = new Email;
-        $email->token = $request->input('token');
-        $email->email = $request->input('email');
-        $email->save();
         try {
             Mail::to($email->email)->send(new MessageConfirmEmail('Confirmar correo', $email->token, $email->email));
+
+            $email = new Email;
+            $email->token = $request->input('token');
+            $email->email = $request->input('email');
+            $email->save();
+
             return $email;
         } catch (\Exception $e) {
             \Log::info($e);
