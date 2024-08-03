@@ -32,6 +32,7 @@ pipeline {
                 dir('./back') {
                     sh 'chown -R jenkins:jenkins ./storage/logs'
                     sh 'composer install'
+                    sh 'chmod -R 775 storage/'
                     sh 'composer dump-autoload'
                     sh 'php artisan migrate'
                 }
