@@ -31,8 +31,8 @@ class EmailController extends Controller
 
             return $email;
         } catch (\Exception $e) {
-            \Log::info($e);
             dd($e);
+            \Log::info($e);
         }
     }
 
