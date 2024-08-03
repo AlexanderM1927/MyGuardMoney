@@ -10,7 +10,6 @@ pipeline {
             }
             steps {
                 dir('./front') {
-                    sh 'npm install'
                     sh 'icongenie generate -m pwa -i ./public/logo.png'
                 }
             }
@@ -21,6 +20,7 @@ pipeline {
             }
             steps {
                 dir('./front') {
+                    sh 'npm install'
                     sh 'quasar build -m pwa'
                     sh 'chown -R jenkins:jenkins ./dist/pwa'
                     sh 'rsync -a ./dist/pwa/. /var/lib/jenkins/workspace/myguardmoney/back/public'
