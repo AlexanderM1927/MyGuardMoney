@@ -30,7 +30,7 @@ pipeline {
         stage('Backend installed dependencies and run migrations') {
             steps {
                 dir('./back') {
-                    sh 'chown -R jenkins:www-data ./storage/logs'
+                    sh 'sudo /var/logs-permissions.sh'
                     sh 'composer install'
                     sh 'composer dump-autoload'
                     sh 'php artisan migrate'
