@@ -12,7 +12,7 @@
 */
 $router->group(['prefix' => 'v1'], function () use ($router) {
     $router->get('/test', function () {
-        return 'it works';
+        phpinfo();
     });
 
     // Reminders
