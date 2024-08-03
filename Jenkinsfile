@@ -30,9 +30,8 @@ pipeline {
         stage('Backend installed dependencies and run migrations') {
             steps {
                 dir('./back') {
-                    sh 'chown -R jenkins:jenkins ./storage/logs'
                     sh 'composer install'
-                    sh 'chmod -R 775 storage/'
+                    sh 'chmod -R 775 ./storage/logs'
                     sh 'composer dump-autoload'
                     sh 'php artisan migrate'
                 }
