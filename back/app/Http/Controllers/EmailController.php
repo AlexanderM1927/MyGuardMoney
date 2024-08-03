@@ -27,10 +27,11 @@ class EmailController extends Controller
         $email->save();
         try {
             Mail::to($email->email)->send(new MessageConfirmEmail('Confirmar correo', $email->token, $email->email));
+            return $email;
         } catch (\Exception $e) {
             \Log::info($e);
+            return $e;
         }
-        return $email;
     }
 
     public function checkIfEmailIsVerfied(Request $request, $token)
