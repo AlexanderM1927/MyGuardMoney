@@ -31,7 +31,7 @@ pipeline {
             steps {
                 dir('./back') {
                     sh 'composer install'
-                    sh 'chmod -R 775 ./storage/logs'
+                    sh 'sudo chown -R root:root storage'
                     sh 'composer dump-autoload'
                     sh 'php artisan migrate'
                 }
