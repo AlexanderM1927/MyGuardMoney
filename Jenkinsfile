@@ -30,7 +30,7 @@ pipeline {
         stage('Backend installed dependencies and run migrations') {
             steps {
                 dir('./back') {
-                    sh 'chown -R www-data:www-data /var/lib/jenkins/workspace/myguardmoney/back/storage'
+                    // sh 'chown -R www-data:www-data /var/lib/jenkins/workspace/myguardmoney/back/storage'
                     sh 'composer install'
                     sh 'composer dump-autoload'
                     sh 'php artisan migrate'
