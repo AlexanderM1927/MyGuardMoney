@@ -160,7 +160,7 @@ module.exports = function (/* ctx */) {
       },
       metaVariables: {
         appleMobileWebAppCapable: 'yes',
-        appleMobileWebAppStatusBarStyle: 'black-translucent',
+        appleMobileWebAppStatusBarStyle: 'white',
         appleTouchIcon120: 'logo.png',
         appleTouchIcon180: 'logo.png',
         appleTouchIcon152: 'logo.png',
