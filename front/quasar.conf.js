@@ -166,7 +166,7 @@ module.exports = function (/* ctx */) {
         appleTouchIcon152: 'logo.png',
         appleTouchIcon167: 'logo.png',
         msapplicationTileImage: 'logo.png',
-        msapplicationTileColor: '#000000'
+        msapplicationTileColor: '#FFFFFF'
       }
     },
 
