@@ -33,7 +33,7 @@ pipeline {
                     // sh 'chown -R www-data:www-data /var/lib/jenkins/workspace/myguardmoney/back/storage'
                     sh 'composer install'
                     sh 'composer dump-autoload'
-                    sh 'php artisan migrate'
+                    sh 'php artisan migrate --force'
                 }
             }
         }
