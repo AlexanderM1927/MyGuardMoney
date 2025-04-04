@@ -29,6 +29,10 @@ pipeline {
         }
         stage('Backend installed dependencies and run migrations') {
             steps {
+                withCredentials([file(credentialsId: 'envmyguardmoney', variable: 'ENV_FILE')]) {
+                    sh 'rm -f ./back/.env'
+                    sh 'cp "\$ENV_FILE" ./back/.env'
+                }
                 dir('./back') {
                     // sh 'chown -R www-data:www-data /var/lib/jenkins/workspace/myguardmoney/back/storage'
                     sh 'composer install'
