@@ -19,6 +19,10 @@ pipeline {
                 nodejs 'node-14.16.1'
             }
             steps {
+                withCredentials([file(credentialsId: 'myguardmoney-front', variable: 'ENV_FILE')]) {
+                    sh 'rm -f ./front/.env'
+                    sh 'cp "\$ENV_FILE" ./front/.env'
+                }
                 dir('./front') {
                     sh 'npm install'
                     sh 'quasar build -m pwa'
