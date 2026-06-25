@@ -51,7 +51,7 @@ pipeline {
                     sh 'sudo chmod -R 775 ./storage/'
                     sh 'php7.4 /usr/local/bin/composer install'
                     sh 'php7.4 /usr/local/bin/composer dump-autoload'
-                    sh 'php artisan migrate --force'
+                    sh 'php7.4 artisan migrate --force'
                 }
             }
         }
