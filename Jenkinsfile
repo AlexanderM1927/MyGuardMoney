@@ -49,8 +49,8 @@ pipeline {
                 dir('./back') {
                     sh 'sudo chown -R jenkins:www-data ./storage/'
                     sh 'sudo chmod -R 775 ./storage/'
-                    sh 'composer install'
-                    sh 'composer dump-autoload'
+                    sh 'php7.4 /usr/local/bin/composer install'
+                    sh 'php7.4 /usr/local/bin/composer dump-autoload'
                     sh 'php artisan migrate --force'
                 }
             }
