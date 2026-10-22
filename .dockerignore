@@ -1,0 +1,20 @@
+.git
+.agents
+.aws
+.codex
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/vendor
+**/dist
+**/.quasar
+**/npm-debug.log*
+front/src-cordova
+front/src-electron
+# Production serves freshly built frontend assets; PHP only needs its API entrypoint.
+back/public/**
+!back/public/v1
+!back/public/v1/index.php
+# Runtime data belongs in the persistent volume, not the build context.
+back/storage/**

@@ -3,57 +3,68 @@ pipeline {
     options {
         disableConcurrentBuilds()
     }
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.prod.yml'
+        COMPOSE_PROJECT_NAME = 'myguardmoney'
+        DOCKER_BUILDKIT = '1'
+    }
+
     stages {
-        stage('Prepare logs and permissions') {
+        stage('Check Docker') {
             steps {
-                dir('./back') {
-                    sh 'sudo chown -R jenkins:www-data ./storage'
+                sh 'docker compose version && docker info > /dev/null'
+            }
+        }
+
+        stage('Inject environment') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'envmyguardmoney', variable: 'BACKEND_ENV_FILE'),
+                    file(credentialsId: 'myguardmoney-front', variable: 'FRONTEND_ENV_FILE')
+                ]) {
+                    sh '''
+                        set -eu
+                        umask 077
+                        rm -f back/.env front/.env
+                        cp "$BACKEND_ENV_FILE" back/.env
+                        cp "$FRONTEND_ENV_FILE" front/.env
+                        chmod 600 back/.env front/.env
+                    '''
                 }
             }
         }
-        stage('Frontend prepare') {
-            tools {
-                nodejs 'node-21.11.1'
-            }
+
+        stage('Build production images') {
             steps {
-                dir('./front') {
-                    sh 'icongenie generate -m pwa -i ./public/logo.png'
-                }
+                sh '''
+                    set -eu
+                    export FRONTEND_ENV_HASH="$(sha256sum front/.env | cut -d ' ' -f 1)"
+                    docker compose config --quiet
+                    docker compose build --pull app web
+                '''
             }
         }
-        stage('Frontend build') {
-            tools {
-                nodejs 'node-14.16.1'
-            }
+
+        stage('Run database migrations') {
             steps {
-                withCredentials([file(credentialsId: 'myguardmoney-front', variable: 'ENV_FILE')]) {
-                    sh 'rm -f ./front/.env'
-                    sh 'cp "\$ENV_FILE" ./front/.env'
-                }
-                dir('./front') {
-                    sh 'npm install'
-                    sh 'quasar build -m pwa'
-                    sh 'chown -R jenkins:jenkins ./dist/pwa'
-                    sh 'rsync -a ./dist/pwa/. /var/lib/jenkins/workspace/myguardmoney/back/public'
-                }
+                sh 'docker compose run --rm --no-deps app php artisan migrate --force --no-interaction'
             }
         }
-        stage('Backend installed dependencies and run migrations') {
+
+        stage('Start production services') {
             steps {
-                withCredentials([file(credentialsId: 'envmyguardmoney', variable: 'ENV_FILE')]) {
-                    sh 'rm -f ./back/.env'
-                    sh 'cp "\$ENV_FILE" ./back/.env'
-                    sh 'sudo chown -R jenkins:www-data ./back/.env'
-                    sh 'sudo chmod 644 ./back/.env'
-                }
-                dir('./back') {
-                    sh 'sudo chown -R jenkins:www-data ./storage/'
-                    sh 'sudo chmod -R 775 ./storage/'
-                    sh 'php7.4 /usr/local/bin/composer install'
-                    sh 'php7.4 /usr/local/bin/composer dump-autoload'
-                    sh 'php7.4 artisan migrate --force'
-                }
+                // Recreate web too so Nginx resolves the new PHP-FPM container.
+                sh 'docker compose up -d --no-build --force-recreate --wait --wait-timeout 120 app web'
+                sh 'docker compose ps'
             }
+        }
+    }
+
+    post {
+        failure {
+            sh(script: 'docker compose ps', returnStatus: true)
+            sh(script: 'docker compose logs --tail=100 app web', returnStatus: true)
         }
     }
 }
