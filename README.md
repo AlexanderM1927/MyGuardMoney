@@ -3,6 +3,8 @@
 Saving money easier.
 
 Local development uses `compose.yaml` and the Dockerfiles in `front/` and `back/`.
+The backend build context is the repository root so it can include the shared PHP
+security patch in `docker/php/`.
 Production uses `docker-compose.prod.yml` and the root `Dockerfile`, adapted from
 MyPipeline for this Lumen 7 / Quasar 1 application.
 
@@ -83,11 +85,14 @@ storage.
 
 ## Deployment
 
-Jenkins injects both environment files, builds the production images, runs
-`php artisan migrate --force` in a one-off container, then recreates both services
-and waits for health checks. A failed build or migration stops deployment before
-running services are replaced. Migrations should remain compatible with the
-previous application version during this transition.
+Jenkins injects both environment files, builds the production images, verifies
+the PHP security backport, runs `php artisan migrate --force` in a one-off
+container, then recreates both services and waits for health checks. It verifies
+the backport again in the running app and checks that `/v1/test` returns
+`it works` through Nginx and PHP-FPM. A failed build, image security check, or
+migration stops deployment before running services are replaced. Migrations
+should remain compatible with the previous application version during this
+transition.
 
 For a manual deployment, provide `back/.env` and `front/.env`, then run:
 
@@ -107,3 +112,56 @@ Lumen through `/v1/test`; migrations check database connectivity. `/healthz` che
 Nginx alone. View container logs with
 `docker compose -f docker-compose.prod.yml logs --tail=100`; Lumen's file logs remain
 in `storage/logs` in the persistent volume.
+
+## PHP2Shell security update (October 2026)
+
+Both PHP Dockerfiles rebuild PHP 7.4.33 with the PHP security team's
+[official backport](https://github.com/php/php-src/commit/712e60f9edfd03f0960fc4fc3c2c375f42b90aa2)
+for CVE-2026-109618 and CVE-2026-109619, linked from the
+[PHP security advisory](https://www.php.net/archive/2026.php).
+The patch is committed in `docker/php/patches/`, checked against its SHA-256, and
+applied before compiling PHP and this application's extensions. The build fails
+if the patch or runtime checks fail. Extension sources retained in the image are
+patched too.
+The development backend uses the same Alpine PHP 7.4.33 base and Composer 2.2 as
+production so both builds share the backport procedure.
+
+The minimal EOL backport terminates a worker immediately on memory exhaustion,
+skipping PHP shutdown handlers, and disables session upload progress. Normal
+requests retain their configured PHP memory limit. PHP 7.4 remains unsupported;
+this fix does not restore general security support.
+
+For an existing Docker production deployment, first get these changed files onto
+the VPS through your normal Git/Jenkins workflow. A Jenkins deployment rebuilds
+and replaces the patched containers automatically. Alternatively, from the
+production checkout with the existing `back/.env` and `front/.env` present, run:
+
+```sh
+set -eu
+export COMPOSE_FILE=docker-compose.prod.yml
+export COMPOSE_PROJECT_NAME=myguardmoney
+docker compose config --quiet
+# Build first; the currently running app remains available during compilation.
+docker compose build --pull app
+docker run --rm --network none --entrypoint sh \
+  myguardmoney-app:latest /usr/local/bin/php-security-check
+# Recreate web too so Nginx resolves the new app container's address.
+docker compose up -d --no-build --force-recreate --wait --wait-timeout 120 app web
+docker compose exec -T app sh /usr/local/bin/php-security-check
+docker compose ps
+curl --fail --silent --show-error "http://127.0.0.1:${APP_PORT:-8001}/v1/test"
+```
+
+The security check should print `PHP2Shell backport verified` with both CVE IDs,
+and the API should return `it works`. No database migration is needed for this
+security-only update. The first patched build recompiles PHP, so allow several
+minutes; `PHP_BUILD_JOBS` defaults to 2 to limit compiler memory use. For local
+development, rebuild and recreate `backend` with `docker compose -f compose.yaml
+up -d --build backend`.
+
+`php -v` still reports 7.4.33 after this source backport; use the security check
+and the image's `org.myguardmoney.php2shell.commit` label to identify the patched
+build. Updating host PHP or merely restarting an old container does not patch the
+PHP engine inside the image. If the VPS still serves this site using a host
+PHP-FPM socket instead of this Docker stack, update that runtime through its
+package vendor and verify coverage for both CVEs before restarting its workers.

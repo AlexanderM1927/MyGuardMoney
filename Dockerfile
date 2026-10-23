@@ -18,8 +18,17 @@ RUN --mount=type=secret,id=frontend_env,target=/usr/src/front-app/.env,required=
 FROM php:7.4.33-fpm-alpine AS php_base
 
 ARG ALPINE_MIRROR=dl-cdn.alpinelinux.org
+ARG PHP_BUILD_JOBS=2
+COPY docker/php/patches/php2shell-712e60f.patch /tmp/php2shell.patch
+COPY docker/php/apply-security-backport.sh /tmp/apply-security-backport.sh
+COPY docker/php/verify-security-backport.sh /usr/local/bin/php-security-check
 RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_MIRROR}/g" /etc/apk/repositories \
-    && apk add --no-cache \
+    && sh /tmp/apply-security-backport.sh \
+    && rm /tmp/apply-security-backport.sh
+
+LABEL org.myguardmoney.php2shell.commit="712e60f9edfd03f0960fc4fc3c2c375f42b90aa2"
+
+RUN apk add --no-cache \
         freetype-dev \
         libjpeg-turbo-dev \
         libpng-dev \
@@ -29,9 +38,10 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_MIRROR}/g" /etc/apk/repositories \
         unzip \
         $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" \
+    && docker-php-ext-install -j"$PHP_BUILD_JOBS" \
         bcmath exif gd mbstring mysqli opcache pcntl pdo_mysql zip \
-    && apk del $PHPIZE_DEPS
+    && apk del $PHPIZE_DEPS \
+    && sh /usr/local/bin/php-security-check
 
 WORKDIR /var/www/html
 

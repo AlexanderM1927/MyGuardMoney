@@ -46,6 +46,16 @@ pipeline {
             }
         }
 
+        stage('Verify PHP security backport') {
+            steps {
+                // Check the new image before changing the running deployment.
+                sh '''
+                    docker run --rm --network none --entrypoint sh \
+                        myguardmoney-app:latest /usr/local/bin/php-security-check
+                '''
+            }
+        }
+
         stage('Run database migrations') {
             steps {
                 sh 'docker compose run --rm --no-deps app php artisan migrate --force --no-interaction'
@@ -57,6 +67,18 @@ pipeline {
                 // Recreate web too so Nginx resolves the new PHP-FPM container.
                 sh 'docker compose up -d --no-build --force-recreate --wait --wait-timeout 120 app web'
                 sh 'docker compose ps'
+            }
+        }
+
+        stage('Verify deployment') {
+            steps {
+                sh '''
+                    set -eu
+                    docker compose exec -T app sh /usr/local/bin/php-security-check
+                    api_response="$(docker compose exec -T web wget -q -O - http://127.0.0.1/v1/test)"
+                    test "$api_response" = 'it works'
+                    printf 'API check passed: %s\n' "$api_response"
+                '''
             }
         }
     }

@@ -17,8 +17,8 @@ services:
   backend:
     container_name: backend_myguardmoney
     build: 
-      dockerfile: Dockerfile
-      context: ./back
+      dockerfile: back/Dockerfile
+      context: .
     volumes:
       - ./back/:/usr/src/back-app
       - ./back/composer.json:/usr/src/back-app/composer.json
